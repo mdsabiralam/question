@@ -36,3 +36,64 @@
  GET / 200 in 112ms (compile: 11ms, render: 101ms)
  GET / 200 in 111ms (compile: 6ms, render: 105ms)
  GET / 200 in 88ms (compile: 7ms, render: 81ms)
+✓ Compiled in 1665ms
+ GET / 200 in 3.3s (compile: 2.2s, render: 1162ms)
+ GET / 200 in 72ms (compile: 9ms, render: 63ms)
+ GET / 200 in 80ms (compile: 5ms, render: 75ms)
+⨯ ./src/components/Sidebar.tsx:6:8
+Ecmascript file had an error
+[0m [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { [33mMenu[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m   |[39m        [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m
+ [90m 8 |[39m [36mexport[39m [36mconst[39m [33mSidebar[39m [33m=[39m () [33m=>[39m {
+ [90m 9 |[39m   [36mconst[39m [isOpen[33m,[39m setIsOpen] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+
+the name `React` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./src/components/Sidebar.tsx [Client Component Browser]
+    ./src/components/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/Sidebar.tsx [Client Component SSR]
+    ./src/components/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+○ Compiling /_error ...
+ GET / 500 in 5.8s (compile: 5.3s, render: 507ms)
+⨯ ./src/components/Sidebar.tsx:6:8
+Ecmascript file had an error
+[0m [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { [33mMenu[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m   |[39m        [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m
+ [90m 8 |[39m [36mexport[39m [36mconst[39m [33mSidebar[39m [33m=[39m () [33m=>[39m {
+ [90m 9 |[39m   [36mconst[39m [isOpen[33m,[39m setIsOpen] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+
+the name `React` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./src/components/Sidebar.tsx [Client Component Browser]
+    ./src/components/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/Sidebar.tsx [Client Component SSR]
+    ./src/components/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+ GET / 500 in 30ms (compile: 15ms, render: 16ms)
+✓ Compiled in 72ms
+ GET / 200 in 401ms (compile: 170ms, render: 231ms)

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "class-9-Math-q1",
+    "title": "Sample Math Question 1 for class-9",
+    "subject": "Math",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Math-q2",
+    "title": "Sample Math Question 2 for class-9",
+    "subject": "Math",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Math-q3",
+    "title": "Sample Math Question 3 for class-9",
+    "subject": "Math",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Math-q4",
+    "title": "Sample Math Question 4 for class-9",
+    "subject": "Math",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Math-q5",
+    "title": "Sample Math Question 5 for class-9",
+    "subject": "Math",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  }
+]

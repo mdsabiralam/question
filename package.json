@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "server": "cd server && node server.js"
+    "server": "cd server && node server.js",
+    "generate-data": "node scripts/generate-question-bank.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",

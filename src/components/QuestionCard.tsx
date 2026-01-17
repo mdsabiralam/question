@@ -17,7 +17,7 @@ export const QuestionCard = ({ question }: QuestionCardProps) => {
     <div
       draggable
       onDragStart={handleDragStart}
-      className="bg-white p-3 rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing mb-3 group"
+      className="bg-white p-3 rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing mb-3 group touch-none"
     >
       <div className="flex items-start gap-2">
         <GripVertical className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />

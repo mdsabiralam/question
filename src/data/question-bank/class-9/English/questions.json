@@ -1,0 +1,47 @@
+[
+  {
+    "id": "class-9-English-q1",
+    "title": "Sample English Question 1 for class-9",
+    "subject": "English",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-English-q2",
+    "title": "Sample English Question 2 for class-9",
+    "subject": "English",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-English-q3",
+    "title": "Sample English Question 3 for class-9",
+    "subject": "English",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-English-q4",
+    "title": "Sample English Question 4 for class-9",
+    "subject": "English",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-English-q5",
+    "title": "Sample English Question 5 for class-9",
+    "subject": "English",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  }
+]

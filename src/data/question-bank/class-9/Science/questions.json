@@ -1,0 +1,47 @@
+[
+  {
+    "id": "class-9-Science-q1",
+    "title": "Sample Science Question 1 for class-9",
+    "subject": "Science",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Science-q2",
+    "title": "Sample Science Question 2 for class-9",
+    "subject": "Science",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Science-q3",
+    "title": "Sample Science Question 3 for class-9",
+    "subject": "Science",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Science-q4",
+    "title": "Sample Science Question 4 for class-9",
+    "subject": "Science",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-9-Science-q5",
+    "title": "Sample Science Question 5 for class-9",
+    "subject": "Science",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "medium"
+  }
+]

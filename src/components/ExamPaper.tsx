@@ -205,7 +205,7 @@ export const ExamPaper = () => {
                                             }}
                                             onDrop={(e) => handleDrop(e, globalIndex)}
                                             onDragOver={handleDragOver}
-                                            className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all"
+                                            className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all touch-none"
                                         >
                                             {/* Remove Button */}
                                             <button

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "class-10-Bengali-q1",
+    "title": "Sample Bengali Question 1 for class-10",
+    "subject": "Bengali",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-10",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-10-Bengali-q2",
+    "title": "Sample Bengali Question 2 for class-10",
+    "subject": "Bengali",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-10",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-10-Bengali-q3",
+    "title": "Sample Bengali Question 3 for class-10",
+    "subject": "Bengali",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-10",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-10-Bengali-q4",
+    "title": "Sample Bengali Question 4 for class-10",
+    "subject": "Bengali",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-10",
+    "difficulty": "medium"
+  },
+  {
+    "id": "class-10-Bengali-q5",
+    "title": "Sample Bengali Question 5 for class-10",
+    "subject": "Bengali",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-10",
+    "difficulty": "medium"
+  }
+]
