@@ -7,6 +7,7 @@ export const draftQuestions: Question[] = [
     subject: 'General Knowledge',
     type: 'MCQ',
     marks: 1,
+    class: 'class-10',
   },
   {
     id: 'q2',
@@ -14,6 +15,7 @@ export const draftQuestions: Question[] = [
     subject: 'Science',
     type: 'Short Answer',
     marks: 5,
+    class: 'class-10',
   },
   {
     id: 'q3',
@@ -21,6 +23,7 @@ export const draftQuestions: Question[] = [
     subject: 'Math',
     type: 'Short Answer',
     marks: 3,
+    class: 'class-10',
   },
   {
     id: 'q4',
@@ -28,6 +31,7 @@ export const draftQuestions: Question[] = [
     subject: 'Bengali',
     type: 'Creative',
     marks: 10,
+    class: 'class-10',
   },
   {
     id: 'q5',
@@ -35,5 +39,14 @@ export const draftQuestions: Question[] = [
     subject: 'Bengali',
     type: 'MCQ',
     marks: 1,
+    class: 'class-10',
+  },
+  {
+    id: 'q6',
+    title: 'What is photosynthesis?',
+    subject: 'Science',
+    type: 'Short Answer',
+    marks: 3,
+    class: 'class-9',
   },
 ];

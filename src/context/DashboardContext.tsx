@@ -11,6 +11,7 @@ interface DashboardContextType {
   addQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
+  reorderQuestions: (startIndex: number, endIndex: number) => void;
   setSelectedClass: (cls: string) => void;
   setSelectedSubject: (subject: string) => void;
 }
@@ -37,6 +38,15 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const reorderQuestions = (startIndex: number, endIndex: number) => {
+    setSelectedQuestions((prev) => {
+      const result = Array.from(prev);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      return result;
+    });
+  };
+
   return (
     <DashboardContext.Provider
       value={{
@@ -47,6 +57,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         addQuestion,
         removeQuestion,
         updateQuestion,
+        reorderQuestions,
         setSelectedClass,
         setSelectedSubject,
       }}

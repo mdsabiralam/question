@@ -4,6 +4,7 @@ export interface Question {
   subject: string;
   type: 'MCQ' | 'Short Answer' | 'Creative';
   marks: number;
+  class: string;
 }
 
 export interface QuestionGroup {
