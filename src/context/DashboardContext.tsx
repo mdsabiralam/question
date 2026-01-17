@@ -8,6 +8,7 @@ interface DashboardContextType {
   questionGroups: QuestionGroup[];
   selectedClass: string;
   selectedSubject: string;
+  isSyncing: boolean;
   addQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
@@ -28,9 +29,12 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   ]);
   const [selectedClass, setSelectedClass] = useState<string>('class-10');
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const addQuestion = (question: Question) => {
     setSelectedQuestions((prev) => [...prev, question]);
+    setIsSyncing(true);
+    setTimeout(() => setIsSyncing(false), 1000);
   };
 
   const removeQuestion = (questionId: string) => {
@@ -72,6 +76,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         questionGroups,
         selectedClass,
         selectedSubject,
+        isSyncing,
         addQuestion,
         removeQuestion,
         updateQuestion,

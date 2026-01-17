@@ -3,7 +3,7 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 
 export const ExamPaper = () => {
@@ -64,6 +64,21 @@ export const ExamPaper = () => {
     setEditingId(null);
   };
 
+  const handleDownloadPDF = async () => {
+    if (typeof window !== 'undefined') {
+        const html2pdf = (await import('html2pdf.js')).default;
+        const element = paperRef.current;
+        const opt = {
+            margin: 10, // mm
+            filename: `${schoolName.replace(/\s+/g, '_')}_Exam.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
+  };
+
   return (
     <div className="h-full flex justify-center overflow-y-auto p-4 md:p-8 bg-gray-200">
       <div
@@ -109,13 +124,22 @@ export const ExamPaper = () => {
                         className="text-2xl font-bold text-center w-full border-none focus:ring-0 placeholder-gray-300 text-gray-900"
                         placeholder="School Name"
                     />
-                     <button
-                        onClick={() => setShowPreview(true)}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
-                        title="Validate & Preview"
-                    >
-                        <Eye className="w-5 h-5" />
-                    </button>
+                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="p-2 text-purple-600 hover:bg-purple-50 rounded-full"
+                            title="Download PDF"
+                        >
+                            <Download className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={() => setShowPreview(true)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                            title="Validate & Preview"
+                        >
+                            <Eye className="w-5 h-5" />
+                        </button>
+                     </div>
                 </div>
                 <div className="flex justify-between items-center px-4 text-sm font-semibold text-gray-700">
                     <div className="flex gap-2 items-center">
