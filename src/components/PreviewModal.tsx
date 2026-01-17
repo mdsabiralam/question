@@ -32,10 +32,8 @@ export const PreviewModal = ({ onClose, schoolName }: PreviewModalProps) => {
         return {
             id: `group-${g.type}`,
             label: `${g.type} Group Config`,
-            isValid: count >= g.totalToAnswer, // Simple rule: must have enough questions to answer? Or just checking config match?
-            // Prompt 13: "check if the total questions in a group match the configuration (e.g., 'Expected 5 questions, found 3')"
-            // Usually we need at least totalToAnswer questions available.
-            error: `Expected at least ${g.totalToAnswer} ${g.type} questions, found ${count}.`
+            isValid: count >= g.totalInGroup,
+            error: `Expected ${g.totalInGroup} ${g.type} questions (to match 'out of ${g.totalInGroup}'), found ${count}.`
         };
     })
   ];
