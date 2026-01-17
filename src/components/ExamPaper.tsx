@@ -3,10 +3,11 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2 } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye } from 'lucide-react';
+import { PreviewModal } from './PreviewModal';
 
 export const ExamPaper = () => {
-  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions } = useDashboard();
+  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
 
   const [schoolName, setSchoolName] = useState('Govt. High School');
@@ -14,6 +15,7 @@ export const ExamPaper = () => {
   const [time, setTime] = useState('2 Hours 30 Minutes');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [numberingFormat, setNumberingFormat] = useState<'english' | 'bengali' | 'roman'>('bengali');
+  const [showPreview, setShowPreview] = useState(false);
 
   // Local state for editing fields
   const [editTitle, setEditTitle] = useState('');
@@ -88,7 +90,7 @@ export const ExamPaper = () => {
                             <p className="text-xs font-semibold text-gray-500 mb-2">Numbering</p>
                             <select
                                 value={numberingFormat}
-                                onChange={(e) => setNumberingFormat(e.target.value as any)}
+                                onChange={(e) => setNumberingFormat(e.target.value as 'english' | 'bengali' | 'roman')}
                                 className="w-full text-xs border rounded p-1"
                             >
                                 <option value="bengali">Bengali</option>
@@ -99,13 +101,22 @@ export const ExamPaper = () => {
                     </div>
                 </div>
 
-                <input
-                    type="text"
-                    value={schoolName}
-                    onChange={(e) => setSchoolName(e.target.value)}
-                    className="text-2xl font-bold text-center w-full border-none focus:ring-0 placeholder-gray-300 text-gray-900 mb-2"
-                    placeholder="School Name"
-                />
+                <div className="flex justify-center items-center gap-2 mb-2 relative">
+                    <input
+                        type="text"
+                        value={schoolName}
+                        onChange={(e) => setSchoolName(e.target.value)}
+                        className="text-2xl font-bold text-center w-full border-none focus:ring-0 placeholder-gray-300 text-gray-900"
+                        placeholder="School Name"
+                    />
+                     <button
+                        onClick={() => setShowPreview(true)}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                        title="Validate & Preview"
+                    >
+                        <Eye className="w-5 h-5" />
+                    </button>
+                </div>
                 <div className="flex justify-between items-center px-4 text-sm font-semibold text-gray-700">
                     <div className="flex gap-2 items-center">
                         <span>Exam:</span>
@@ -142,10 +153,17 @@ export const ExamPaper = () => {
                        const questionsOfType = selectedQuestions.filter(q => q.type === type);
                        if (questionsOfType.length === 0) return null;
 
+                       const groupConfig = questionGroups.find(g => g.type === type);
+
                        return (
                            <div key={type}>
-                                <div className="mb-2 font-bold text-gray-800 text-lg border-b-2 border-gray-100 pb-1">
-                                    {type} Questions
+                                <div className="mb-2 font-bold text-gray-800 text-lg border-b-2 border-gray-100 pb-1 flex justify-between items-end">
+                                    <span>{type} Questions</span>
+                                    {groupConfig && (
+                                        <span className="text-sm font-normal text-gray-500">
+                                            Answer any {numberingFormat === 'bengali' ? toBengali(groupConfig.totalToAnswer) : groupConfig.totalToAnswer} questions
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="space-y-3">
                                     {questionsOfType.map((q, index) => {
@@ -232,6 +250,13 @@ export const ExamPaper = () => {
             )}
         </div>
       </div>
+
+      {showPreview && (
+          <PreviewModal
+            onClose={() => setShowPreview(false)}
+            schoolName={schoolName}
+          />
+      )}
     </div>
   );
 };

@@ -12,3 +12,22 @@
  GET / 200 in 3.7s (compile: 3.5s, render: 280ms)
  GET / 200 in 217ms (compile: 87ms, render: 130ms)
  GET / 200 in 521ms (compile: 330ms, render: 192ms)
+ GET / 200 in 2.4s (compile: 1350ms, render: 1009ms)
+ GET / 200 in 85ms (compile: 8ms, render: 77ms)
+ GET / 200 in 70ms (compile: 5ms, render: 66ms)
+⨯ Error: useDashboard must be used within a DashboardProvider
+    at useDashboard (src/context/DashboardContext.tsx:92:11)
+    at DashboardPage (src/app/page.tsx:17:65)
+  90 |   const context = useContext(DashboardContext);
+  91 |   if (context === undefined) {
+> 92 |     throw new Error('useDashboard must be used within a DashboardProvider');
+     |           ^
+  93 |   }
+  94 |   return context;
+  95 | }; {
+  digest: '933030691'
+}
+ GET / 500 in 543ms (compile: 297ms, render: 245ms)
+ GET / 200 in 183ms (compile: 67ms, render: 116ms)
+ GET / 200 in 80ms (compile: 6ms, render: 73ms)
+ GET / 200 in 182ms (compile: 75ms, render: 106ms)
