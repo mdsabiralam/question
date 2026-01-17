@@ -9,12 +9,13 @@ import { X, Calculator } from 'lucide-react';
 interface QuestionGroupModalProps {
   initialConfig?: QuestionGroup;
   type: 'MCQ' | 'Short Answer' | 'Creative';
+  onTypeChange?: (type: 'MCQ' | 'Short Answer' | 'Creative') => void;
   onSave: (group: QuestionGroup) => void;
   onClose: () => void;
   startPosition?: { x: number; y: number };
 }
 
-export const QuestionGroupModal = ({ initialConfig, type, onSave, onClose, startPosition }: QuestionGroupModalProps) => {
+export const QuestionGroupModal = ({ initialConfig, type, onTypeChange, onSave, onClose, startPosition }: QuestionGroupModalProps) => {
   // State
   const [marksPerQuestion, setMarksPerQuestion] = useState(initialConfig?.marksPerQuestion || 1);
   const [totalToAnswer, setTotalToAnswer] = useState(initialConfig?.totalToAnswer || 1);
@@ -94,15 +95,27 @@ export const QuestionGroupModal = ({ initialConfig, type, onSave, onClose, start
         )}
       >
         {/* Draggable Header */}
-        <h2
+        <div
           onMouseDown={handleMouseDown}
           className="bg-gray-100 p-3 rounded-t-lg font-bold text-gray-700 flex justify-between items-center cursor-move select-none border-b border-gray-200"
         >
-          <span>{type} Settings</span>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <div className="flex items-center gap-2" onMouseDown={(e) => e.stopPropagation()}>
+             {/* Type Selector within Header */}
+             <select
+               value={type}
+               onChange={(e) => onTypeChange && onTypeChange(e.target.value as 'MCQ' | 'Short Answer' | 'Creative')}
+               className="bg-transparent border-none font-bold text-gray-700 focus:ring-0 cursor-pointer"
+             >
+                <option value="MCQ">MCQ</option>
+                <option value="Short Answer">Short Answer</option>
+                <option value="Creative">Creative</option>
+             </select>
+             <span>Settings</span>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600" onMouseDown={(e) => e.stopPropagation()}>
             <X className="w-4 h-4" />
           </button>
-        </h2>
+        </div>
 
         <div className="p-4 space-y-4">
           <div>

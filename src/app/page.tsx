@@ -54,9 +54,11 @@ const DashboardContent = () => {
 
             {modalState.isOpen && (
                 <QuestionGroupModal
+                    key={modalState.type} // Force re-render when type changes to reset form state
                     type={modalState.type}
                     startPosition={modalState.position}
                     initialConfig={questionGroups.find(g => g.type === modalState.type)}
+                    onTypeChange={(newType) => setModalState(prev => ({ ...prev, type: newType }))}
                     onSave={handleSaveGroup}
                     onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
                 />
