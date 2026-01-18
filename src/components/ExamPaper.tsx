@@ -11,12 +11,12 @@ interface ExamPaperProps {
 }
 
 export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
-  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft, questionBank } = useDashboard();
+  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft, questionBank, examMeta, setExamMeta } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
 
-  const [schoolName, setSchoolName] = useState('Govt. High School');
-  const [examName, setExamName] = useState('Half Yearly Exam 2024');
-  const [time, setTime] = useState('2 Hours 30 Minutes');
+  // Destructure from Context State
+  const { schoolName, examName, time } = examMeta;
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [numberingFormat, setNumberingFormat] = useState<'english' | 'bengali' | 'roman'>('bengali');
   const [showPreview, setShowPreview] = useState(false);
@@ -26,6 +26,10 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
   const [editMarks, setEditMarks] = useState(0);
 
   const totalMarks = selectedQuestions.reduce((sum, q) => sum + q.marks, 0);
+
+  const handleMetaChange = (key: keyof typeof examMeta, value: string) => {
+      setExamMeta(prev => ({ ...prev, [key]: value }));
+  };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -145,7 +149,7 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                     <input
                         type="text"
                         value={schoolName}
-                        onChange={(e) => setSchoolName(e.target.value)}
+                        onChange={(e) => handleMetaChange('schoolName', e.target.value)}
                         className="text-2xl font-bold text-center w-full border-none focus:ring-0 placeholder-gray-300 text-gray-900"
                         placeholder="School Name"
                     />
@@ -179,7 +183,7 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                         <input
                             type="text"
                             value={examName}
-                            onChange={(e) => setExamName(e.target.value)}
+                            onChange={(e) => handleMetaChange('examName', e.target.value)}
                             className="border-none focus:ring-0 p-0 text-sm font-semibold text-gray-700 w-40"
                         />
                     </div>
@@ -188,7 +192,7 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                          <input
                             type="text"
                             value={time}
-                            onChange={(e) => setTime(e.target.value)}
+                            onChange={(e) => handleMetaChange('time', e.target.value)}
                             className="border-none focus:ring-0 p-0 text-sm font-semibold text-gray-700 w-32 text-right"
                         />
                     </div>

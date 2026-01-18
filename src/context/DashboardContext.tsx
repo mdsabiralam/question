@@ -4,6 +4,12 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import axios from 'axios';
 import { Question, QuestionGroup } from '@/types';
 
+interface ExamMeta {
+    schoolName: string;
+    examName: string;
+    time: string;
+}
+
 interface DashboardContextType {
   selectedQuestions: Question[];
   questionGroups: QuestionGroup[];
@@ -12,6 +18,8 @@ interface DashboardContextType {
   isSyncing: boolean;
   questionBank: Question[];
   isLoadingQuestions: boolean;
+  examMeta: ExamMeta;
+  setExamMeta: React.Dispatch<React.SetStateAction<ExamMeta>>;
   addQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
@@ -35,9 +43,41 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
 
+  // Exam Meta State (Lifted from ExamPaper)
+  const [examMeta, setExamMeta] = useState<ExamMeta>({
+      schoolName: 'Govt. High School',
+      examName: 'Half Yearly Exam 2024',
+      time: '2 Hours 30 Minutes'
+  });
+
   // Backend Integration State
   const [questionBank, setQuestionBank] = useState<Question[]>([]);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+
+  // Persistence Logic
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('examBuilderDraft');
+          if (saved) {
+              try {
+                  const parsed = JSON.parse(saved);
+                  if (parsed.selectedQuestions) setSelectedQuestions(parsed.selectedQuestions);
+                  if (parsed.examMeta) setExamMeta(parsed.examMeta);
+              } catch (e) {
+                  console.error("Failed to parse draft", e);
+              }
+          }
+      }
+  }, []);
+
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('examBuilderDraft', JSON.stringify({
+              selectedQuestions,
+              examMeta
+          }));
+      }
+  }, [selectedQuestions, examMeta]);
 
   // Fetch Questions from Backend
   useEffect(() => {
@@ -114,6 +154,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         isSyncing,
         questionBank,
         isLoadingQuestions,
+        examMeta,
+        setExamMeta,
         addQuestion,
         removeQuestion,
         updateQuestion,
