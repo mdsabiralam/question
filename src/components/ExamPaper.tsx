@@ -155,6 +155,13 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                     />
                      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
                         <button
+                            onClick={handleAutoGenerate}
+                            className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-full"
+                            title="Auto-Generate"
+                        >
+                            <Sparkles className="w-5 h-5" />
+                        </button>
+                        <button
                             onClick={() => saveDraft({ schoolName, examName, time, totalMarks })}
                             className="p-2 text-green-600 hover:bg-green-50 rounded-full"
                             title="Save Draft"

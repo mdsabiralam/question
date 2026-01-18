@@ -27,8 +27,10 @@ export const VoiceAgent = () => {
   };
 
   const startListening = () => {
-    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-        alert("Your browser does not support Voice Recognition. Please use Chrome or Edge.");
+    if (typeof window === 'undefined' || !('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        console.warn("Voice Recognition not supported in this browser.");
+        setTranscript("Voice not supported");
+        setTimeout(() => setTranscript(''), 3000);
         return;
     }
 
