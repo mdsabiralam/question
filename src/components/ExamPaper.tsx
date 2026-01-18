@@ -3,10 +3,12 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, Plus, AlertTriangle, FileEdit } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, Plus, AlertTriangle, FileEdit, PenTool } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 import { SectionModal } from './SectionModal';
-import { Section } from '@/types';
+import { QuestionEditorModal } from './question-editor/QuestionEditorModal';
+import { BlockRenderer } from './question-editor/BlockRenderer';
+import { Section, Question } from '@/types';
 
 interface ExamPaperProps {
   onOpenGroupSettings?: (type: 'MCQ' | 'Short Answer' | 'Creative', e: React.MouseEvent) => void;
@@ -31,16 +33,15 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
 
+  // Rich Editor State
+  const [questionForRichEdit, setQuestionForRichEdit] = useState<Question | null>(null);
+
   // Local state for editing fields
   const [editTitle, setEditTitle] = useState('');
   const [editMarks, setEditMarks] = useState(0);
 
   // Calculate Totals
   const calculatedSectionMarks = sections.reduce((sum, s) => sum + (s.marksPerQuestion * s.questionsToAttempt), 0);
-  // Also count loose questions? No, we assume all questions in sections now.
-  // But wait, totalMarks logic in previous version was sum of individual question marks.
-  // The requirement says "Section Marks = Questions to Attempt * Marks per Question".
-  // So the paper total is sum of section totals.
   const totalMarks = calculatedSectionMarks;
 
   const handleMetaChange = (key: keyof typeof examMeta, value: string) => {
@@ -63,7 +64,6 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
     if (source === 'draft') {
         const questionToAdd = questionBank.find(q => q.id === questionId) || draftQuestions.find(q => q.id === questionId);
         if (questionToAdd) {
-            // Check if section type matches question type
             if (sectionId) {
                 const section = sections.find(s => s.id === sectionId);
                 if (section && section.questionType !== questionToAdd.type) {
@@ -71,16 +71,12 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                     return;
                 }
             }
-
-            // Check if already added
             const isAlreadyAdded = selectedQuestions.some(q => q.id === questionId);
             if (!isAlreadyAdded) {
                 addQuestion(questionToAdd, sectionId);
             }
         }
     } else if (source === 'paper' && sourceIndex !== -1 && targetIndex !== undefined) {
-         // Reordering logic
-         // For now global reorder
          reorderQuestions(sourceIndex, targetIndex);
     }
   };
@@ -100,6 +96,11 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
     setEditingId(null);
   };
 
+  const handleSaveRichEdit = (updatedQ: Question) => {
+      updateQuestion(updatedQ.id, { blocks: updatedQ.blocks, title: updatedQ.title });
+      setQuestionForRichEdit(null);
+  };
+
   const handleDownloadPDF = async () => {
     if (typeof window !== 'undefined') {
         const html2pdf = (await import('html2pdf.js')).default;
@@ -114,17 +115,6 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
         };
         html2pdf().set(opt).from(element).save();
     }
-  };
-
-  // Auto Generate for sections
-  const handleAutoGenerate = () => {
-      // Logic for sections? Or generic?
-      // Since we moved to sections, generic auto-gen might need to be smarter.
-      // For now disable or simple random fill into first available section?
-      // I'll leave it as simple random add to *first* section or just globally (no sectionId).
-      // If no sections, we can't really add well.
-      // I'll skip auto-gen update for this iteration to focus on Section Builder.
-      alert("Please add sections first!");
   };
 
   const handleAddSection = () => {
@@ -151,7 +141,6 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
       <div
         ref={paperRef}
         onDragOver={handleDragOver}
-        // Global drop (optional, maybe for creating new section?)
         className={clsx(
           "bg-white shadow-lg transition-all duration-300",
           "w-full max-w-[210mm] min-h-[297mm]",
@@ -227,7 +216,6 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                 <div className="flex justify-between items-center px-4 text-sm font-semibold text-gray-700">
                     <div className="flex gap-2 items-center">
                         <span>{examType}</span>
-                         {/* Removed input for examName here as it's in Setup, or keep read-only/display */}
                          <span className="font-normal text-gray-500">| {examName}</span>
                     </div>
                     <div>
@@ -313,22 +301,77 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                                                     onDragOver={handleDragOver}
                                                     className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all touch-none"
                                                 >
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); removeQuestion(q.id); }}
-                                                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity z-10"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                    {/* Existing Edit UI reused... omitting for brevity if complex, but assuming standard */}
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="flex gap-3">
-                                                            <span className="font-bold text-gray-500 min-w-[20px]">
-                                                                {formatSerial(index, numberingFormat)}.
-                                                            </span>
-                                                            <p className="text-gray-900 font-medium">{q.title}</p>
-                                                        </div>
-                                                        <span className="text-sm font-semibold text-gray-600">{toBengali(q.marks)}</span>
+                                                    <div className="absolute right-2 top-2 flex gap-1 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); setQuestionForRichEdit(q); }}
+                                                            className="text-blue-400 hover:text-blue-600 bg-white rounded-full p-1 shadow-sm"
+                                                            title="Advanced Editor"
+                                                        >
+                                                            <PenTool className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); removeQuestion(q.id); }}
+                                                            className="text-red-400 hover:text-red-600 bg-white rounded-full p-1 shadow-sm"
+                                                            title="Remove"
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
                                                     </div>
+
+                                                    {/* Edit Mode Inline */}
+                                                    {editingId === q.id ? (
+                                                        <div className="flex flex-col gap-2 w-full pr-16">
+                                                            <input
+                                                                type="text"
+                                                                value={editTitle}
+                                                                onChange={(e) => setEditTitle(e.target.value)}
+                                                                className="border border-gray-300 rounded p-1 text-sm w-full"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                            <div className="flex justify-between items-center">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs text-gray-500">Marks:</span>
+                                                                    <input
+                                                                        type="number"
+                                                                        value={editMarks}
+                                                                        onChange={(e) => setEditMarks(Number(e.target.value))}
+                                                                        className="border border-gray-300 rounded p-1 text-sm w-16"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    />
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <button onClick={() => saveEdit(q.id)} className="text-green-600 hover:text-green-700">
+                                                                        <Check className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button onClick={cancelEdit} className="text-gray-400 hover:text-gray-600">
+                                                                        <X className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div
+                                                            onClick={() => startEditing(q)}
+                                                            className="flex justify-between items-start cursor-pointer w-full pr-6"
+                                                            title="Click to edit title or use Advanced Editor for blocks"
+                                                        >
+                                                            <div className="flex gap-3 w-full">
+                                                                <span className="font-bold text-gray-500 min-w-[20px]">
+                                                                    {formatSerial(index, numberingFormat)}.
+                                                                </span>
+                                                                <div className="w-full">
+                                                                    {q.blocks && q.blocks.length > 0 ? (
+                                                                        <div>
+                                                                            {q.blocks.map(block => <BlockRenderer key={block.id} block={block} />)}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <p className="text-gray-900 font-medium">{q.title}</p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-sm font-semibold text-gray-600 shrink-0">{toBengali(q.marks)}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             );
                                         })
@@ -369,6 +412,14 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
              initialConfig={editingSection || undefined}
              onSave={handleSaveSection}
              onClose={() => setIsSectionModalOpen(false)}
+          />
+      )}
+
+      {questionForRichEdit && (
+          <QuestionEditorModal
+              question={questionForRichEdit}
+              onSave={handleSaveRichEdit}
+              onClose={() => setQuestionForRichEdit(null)}
           />
       )}
     </div>
