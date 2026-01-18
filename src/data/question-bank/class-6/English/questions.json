@@ -1,0 +1,56 @@
+[
+  {
+    "id": "class-6-English-q1",
+    "title": "Sample English Question 1 for class-6",
+    "subject": "English",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-6",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "class-6-English-q2",
+    "title": "Sample English Question 2 for class-6",
+    "subject": "English",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-6",
+    "difficulty": "Hard"
+  },
+  {
+    "id": "class-6-English-q3",
+    "title": "Sample English Question 3 for class-6",
+    "subject": "English",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-6",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-6-English-q4",
+    "title": "Sample English Question 4 for class-6",
+    "subject": "English",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-6",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-6-English-q5",
+    "title": "Sample English Question 5 for class-6",
+    "subject": "English",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-6",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-6-English-q6",
+    "title": "Sample English Question 6 for class-6",
+    "subject": "English",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-6",
+    "difficulty": "Medium"
+  }
+]

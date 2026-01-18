@@ -1,0 +1,104 @@
+
+> exam-paper-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+
+✓ Starting...
+✓ Ready in 1691ms
+○ Compiling / ...
+ GET / 200 in 3.7s (compile: 3.5s, render: 280ms)
+ GET / 200 in 217ms (compile: 87ms, render: 130ms)
+ GET / 200 in 521ms (compile: 330ms, render: 192ms)
+ GET / 200 in 2.4s (compile: 1350ms, render: 1009ms)
+ GET / 200 in 85ms (compile: 8ms, render: 77ms)
+ GET / 200 in 70ms (compile: 5ms, render: 66ms)
+⨯ Error: useDashboard must be used within a DashboardProvider
+    at useDashboard (src/context/DashboardContext.tsx:92:11)
+    at DashboardPage (src/app/page.tsx:17:65)
+  90 |   const context = useContext(DashboardContext);
+  91 |   if (context === undefined) {
+> 92 |     throw new Error('useDashboard must be used within a DashboardProvider');
+     |           ^
+  93 |   }
+  94 |   return context;
+  95 | }; {
+  digest: '933030691'
+}
+ GET / 500 in 543ms (compile: 297ms, render: 245ms)
+ GET / 200 in 183ms (compile: 67ms, render: 116ms)
+ GET / 200 in 80ms (compile: 6ms, render: 73ms)
+ GET / 200 in 182ms (compile: 75ms, render: 106ms)
+✓ Compiled in 4.7s
+ GET / 200 in 3.4s (compile: 1873ms, render: 1552ms)
+ GET / 200 in 112ms (compile: 11ms, render: 101ms)
+ GET / 200 in 111ms (compile: 6ms, render: 105ms)
+ GET / 200 in 88ms (compile: 7ms, render: 81ms)
+✓ Compiled in 1665ms
+ GET / 200 in 3.3s (compile: 2.2s, render: 1162ms)
+ GET / 200 in 72ms (compile: 9ms, render: 63ms)
+ GET / 200 in 80ms (compile: 5ms, render: 75ms)
+⨯ ./src/components/Sidebar.tsx:6:8
+Ecmascript file had an error
+[0m [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { [33mMenu[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m   |[39m        [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m
+ [90m 8 |[39m [36mexport[39m [36mconst[39m [33mSidebar[39m [33m=[39m () [33m=>[39m {
+ [90m 9 |[39m   [36mconst[39m [isOpen[33m,[39m setIsOpen] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+
+the name `React` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./src/components/Sidebar.tsx [Client Component Browser]
+    ./src/components/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/Sidebar.tsx [Client Component SSR]
+    ./src/components/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+○ Compiling /_error ...
+ GET / 500 in 5.8s (compile: 5.3s, render: 507ms)
+⨯ ./src/components/Sidebar.tsx:6:8
+Ecmascript file had an error
+[0m [90m 4 |[39m
+ [90m 5 |[39m [36mimport[39m { [33mMenu[39m } [36mfrom[39m [32m'lucide-react'[39m[33m;[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m [33mReact[39m[33m,[39m { useState } [36mfrom[39m [32m'react'[39m[33m;[39m
+ [90m   |[39m        [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m
+ [90m 8 |[39m [36mexport[39m [36mconst[39m [33mSidebar[39m [33m=[39m () [33m=>[39m {
+ [90m 9 |[39m   [36mconst[39m [isOpen[33m,[39m setIsOpen] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+
+the name `React` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./src/components/Sidebar.tsx [Client Component Browser]
+    ./src/components/DashboardLayout.tsx [Client Component Browser]
+    ./src/app/page.tsx [Client Component Browser]
+    ./src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/Sidebar.tsx [Client Component SSR]
+    ./src/components/DashboardLayout.tsx [Client Component SSR]
+    ./src/app/page.tsx [Client Component SSR]
+    ./src/app/page.tsx [Server Component]
+
+
+ GET / 500 in 30ms (compile: 15ms, render: 16ms)
+✓ Compiled in 72ms
+ GET / 200 in 401ms (compile: 170ms, render: 231ms)
+ GET / 200 in 1632ms (compile: 636ms, render: 996ms)
+ GET / 200 in 2.3s (compile: 1183ms, render: 1152ms)
+ GET / 200 in 2.1s (compile: 954ms, render: 1186ms)
+ GET / 200 in 384ms (compile: 45ms, render: 339ms)
+[?25h
