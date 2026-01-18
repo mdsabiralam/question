@@ -31,20 +31,26 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const addQuestion = (question: Question) => {
-    setSelectedQuestions((prev) => [...prev, question]);
+  const triggerSync = () => {
     setIsSyncing(true);
     setTimeout(() => setIsSyncing(false), 1000);
   };
 
+  const addQuestion = (question: Question) => {
+    setSelectedQuestions((prev) => [...prev, question]);
+    triggerSync();
+  };
+
   const removeQuestion = (questionId: string) => {
     setSelectedQuestions((prev) => prev.filter((q) => q.id !== questionId));
+    triggerSync();
   };
 
   const updateQuestion = (questionId: string, updates: Partial<Question>) => {
     setSelectedQuestions((prev) =>
       prev.map((q) => (q.id === questionId ? { ...q, ...updates } : q))
     );
+    triggerSync();
   };
 
   const updateQuestionGroup = (group: QuestionGroup) => {
@@ -58,6 +64,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             return [...prev, group];
         }
     });
+    triggerSync();
   };
 
   const reorderQuestions = (startIndex: number, endIndex: number) => {
@@ -67,6 +74,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       result.splice(endIndex, 0, removed);
       return result;
     });
+    triggerSync();
   };
 
   return (
