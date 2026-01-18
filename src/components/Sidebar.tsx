@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { BookOpen, FileText, Settings, Menu } from 'lucide-react';
 import clsx from 'clsx';
+import { useDashboard } from '@/context/DashboardContext';
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { setIsSettingsOpen } = useDashboard();
 
   return (
     <>
@@ -37,10 +39,13 @@ export const Sidebar = () => {
             </a>
           </li>
           <li>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-800 transition-colors justify-start">
+            <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="w-full flex items-center p-3 hover:bg-gray-800 transition-colors justify-start text-left"
+            >
               <Settings className="w-6 h-6" />
               <span className="block ml-3">Settings</span>
-            </a>
+            </button>
           </li>
         </ul>
       </nav>

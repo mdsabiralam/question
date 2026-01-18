@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { DashboardProvider } from '@/context/DashboardContext';
 import { SyncIndicator } from './SyncIndicator';
 import { VoiceAgent } from './VoiceAgent';
+import { SettingsModal } from './SettingsModal';
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -18,6 +19,7 @@ export const DashboardLayout = ({ children }: { children: React.ReactNode }) => 
           </div>
           <VoiceAgent />
         </main>
+        <SettingsModal />
       </div>
     </DashboardProvider>
   );

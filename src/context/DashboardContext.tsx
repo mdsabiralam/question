@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
-import { Question, QuestionGroup } from '@/types';
+import { Question, QuestionGroup, ClassStructure } from '@/types';
+import { INITIAL_CLASSES, INITIAL_QUESTION_TYPES } from '@/data/preloadedData';
 
 interface ExamMeta {
     schoolName: string;
@@ -20,6 +21,14 @@ interface DashboardContextType {
   isLoadingQuestions: boolean;
   examMeta: ExamMeta;
   setExamMeta: React.Dispatch<React.SetStateAction<ExamMeta>>;
+
+  // New States
+  classes: ClassStructure[];
+  questionTypes: string[];
+  isSettingsOpen: boolean;
+  setIsSettingsOpen: (isOpen: boolean) => void;
+
+  // Actions
   addQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
@@ -28,6 +37,15 @@ interface DashboardContextType {
   setSelectedClass: (cls: string) => void;
   setSelectedSubject: (subject: string) => void;
   saveDraft: (data: { schoolName: string; examName: string; time: string; totalMarks: number }) => Promise<void>;
+
+  // Settings Actions
+  addClass: (cls: ClassStructure) => void;
+  updateClass: (id: string, updates: Partial<ClassStructure>) => void;
+  deleteClass: (id: string) => void;
+  addSubject: (classId: string, subject: string) => void;
+  deleteSubject: (classId: string, subject: string) => void;
+  addQuestionType: (type: string) => void;
+  deleteQuestionType: (type: string) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -42,8 +60,13 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedClass, setSelectedClass] = useState<string>('class-10');
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // Exam Meta State (Lifted from ExamPaper)
+  // New Global State
+  const [classes, setClasses] = useState<ClassStructure[]>(INITIAL_CLASSES);
+  const [questionTypes, setQuestionTypes] = useState<string[]>(INITIAL_QUESTION_TYPES);
+
+  // Exam Meta State
   const [examMeta, setExamMeta] = useState<ExamMeta>({
       schoolName: 'Govt. High School',
       examName: 'Half Yearly Exam 2024',
@@ -57,14 +80,27 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   // Persistence Logic
   useEffect(() => {
       if (typeof window !== 'undefined') {
-          const saved = localStorage.getItem('examBuilderDraft');
-          if (saved) {
+          // Load Draft
+          const savedDraft = localStorage.getItem('examBuilderDraft');
+          if (savedDraft) {
               try {
-                  const parsed = JSON.parse(saved);
+                  const parsed = JSON.parse(savedDraft);
                   if (parsed.selectedQuestions) setSelectedQuestions(parsed.selectedQuestions);
                   if (parsed.examMeta) setExamMeta(parsed.examMeta);
               } catch (e) {
                   console.error("Failed to parse draft", e);
+              }
+          }
+
+          // Load Settings
+          const savedSettings = localStorage.getItem('examBuilderSettings');
+          if (savedSettings) {
+              try {
+                  const parsed = JSON.parse(savedSettings);
+                  if (parsed.classes) setClasses(parsed.classes);
+                  if (parsed.questionTypes) setQuestionTypes(parsed.questionTypes);
+              } catch (e) {
+                  console.error("Failed to parse settings", e);
               }
           }
       }
@@ -78,6 +114,15 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
           }));
       }
   }, [selectedQuestions, examMeta]);
+
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+          localStorage.setItem('examBuilderSettings', JSON.stringify({
+              classes,
+              questionTypes
+          }));
+      }
+  }, [classes, questionTypes]);
 
   // Fetch Questions from Backend
   useEffect(() => {
@@ -109,7 +154,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addQuestion = (question: Question) => {
-    setSelectedQuestions((prev) => [...prev, question]);
+    // Add to bank (local only for now, ideally post to backend)
+    setQuestionBank(prev => [question, ...prev]);
+    // Also select it? Maybe not.
   };
 
   const removeQuestion = (questionId: string) => {
@@ -144,6 +191,34 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
+  // Settings CRUD
+  const addClass = (cls: ClassStructure) => setClasses(prev => [...prev, cls]);
+  const updateClass = (id: string, updates: Partial<ClassStructure>) => {
+      setClasses(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+  };
+  const deleteClass = (id: string) => setClasses(prev => prev.filter(c => c.id !== id));
+
+  const addSubject = (classId: string, subject: string) => {
+      setClasses(prev => prev.map(c => {
+          if (c.id === classId && !c.subjects.includes(subject)) {
+              return { ...c, subjects: [...c.subjects, subject] };
+          }
+          return c;
+      }));
+  };
+
+  const deleteSubject = (classId: string, subject: string) => {
+      setClasses(prev => prev.map(c => {
+          if (c.id === classId) {
+              return { ...c, subjects: c.subjects.filter(s => s !== subject) };
+          }
+          return c;
+      }));
+  };
+
+  const addQuestionType = (type: string) => setQuestionTypes(prev => [...prev, type]);
+  const deleteQuestionType = (type: string) => setQuestionTypes(prev => prev.filter(t => t !== type));
+
   return (
     <DashboardContext.Provider
       value={{
@@ -156,6 +231,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         isLoadingQuestions,
         examMeta,
         setExamMeta,
+        classes,
+        questionTypes,
+        isSettingsOpen,
+        setIsSettingsOpen,
         addQuestion,
         removeQuestion,
         updateQuestion,
@@ -163,7 +242,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         updateQuestionGroup,
         setSelectedClass,
         setSelectedSubject,
-        saveDraft
+        saveDraft,
+        addClass,
+        updateClass,
+        deleteClass,
+        addSubject,
+        deleteSubject,
+        addQuestionType,
+        deleteQuestionType
       }}
     >
       {children}

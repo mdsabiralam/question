@@ -2,10 +2,16 @@ export interface Question {
   id: string;
   title: string;
   subject: string;
-  type: 'MCQ' | 'Short Answer' | 'Creative';
+  type: string;
   marks: number;
   class: string;
   difficulty?: 'Easy' | 'Medium' | 'Hard';
+}
+
+export interface ClassStructure {
+  id: string;
+  name: string;
+  subjects: string[];
 }
 
 export interface QuestionGroup {
