@@ -8,31 +8,30 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 interface DashboardContextType {
   selectedQuestions: Question[];
-  questionGroups: QuestionGroup[]; // Deprecated but kept for compatibility during migration
-  sections: Section[]; // New
-  examTypes: string[]; // New
+  questionGroups: QuestionGroup[];
+  sections: Section[];
+  examTypes: string[];
   selectedClass: string;
   selectedSubject: string;
   isSyncing: boolean;
   questionBank: Question[];
   isLoadingQuestions: boolean;
   examMeta: ExamMeta;
+  currentView: 'builder' | 'evaluation';
   setExamMeta: React.Dispatch<React.SetStateAction<ExamMeta>>;
+  setCurrentView: (view: 'builder' | 'evaluation') => void;
   addQuestion: (question: Question, sectionId?: string) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
   reorderQuestions: (startIndex: number, endIndex: number) => void;
   updateQuestionGroup: (group: QuestionGroup) => void;
-  // Section Management
   addSection: (section: Section) => void;
   updateSection: (section: Section) => void;
   removeSection: (sectionId: string) => void;
   reorderSections: (startIndex: number, endIndex: number) => void;
-  // Exam Type Management
   addExamType: (type: string) => void;
   updateExamType: (oldType: string, newType: string) => void;
   removeExamType: (type: string) => void;
-
   setSelectedClass: (cls: string) => void;
   setSelectedSubject: (subject: string) => void;
   saveDraft: (data: any) => Promise<void>;
@@ -51,23 +50,20 @@ const DEFAULT_EXAM_TYPES = [
 
 export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedQuestions, setSelectedQuestions] = useState<Question[]>([]);
-
-  // Deprecated groups
   const [questionGroups, setQuestionGroups] = useState<QuestionGroup[]>([
     { id: 'g1', type: 'MCQ', marksPerQuestion: 1, totalToAnswer: 15, totalInGroup: 20 },
     { id: 'g2', type: 'Short Answer', marksPerQuestion: 5, totalToAnswer: 5, totalInGroup: 8 },
     { id: 'g3', type: 'Creative', marksPerQuestion: 10, totalToAnswer: 2, totalInGroup: 3 },
   ]);
 
-  // New Sections
   const [sections, setSections] = useState<Section[]>([]);
   const [examTypes, setExamTypes] = useState<string[]>(DEFAULT_EXAM_TYPES);
+  const [currentView, setCurrentView] = useState<'builder' | 'evaluation'>('builder');
 
   const [selectedClass, setSelectedClass] = useState<string>('class-10');
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Exam Meta State
   const [examMeta, setExamMeta] = useState<ExamMeta>({
       schoolName: 'Govt. High School',
       examName: 'Half Yearly Exam 2024',
@@ -77,11 +73,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       board: 'WB'
   });
 
-  // Backend Integration State
   const [questionBank, setQuestionBank] = useState<Question[]>([]);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
 
-  // Persistence Logic
   useEffect(() => {
       if (typeof window !== 'undefined') {
           const saved = localStorage.getItem('examBuilderDraft');
@@ -110,7 +104,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       }
   }, [selectedQuestions, examMeta, sections, examTypes]);
 
-  // Fetch Questions from Backend
   useEffect(() => {
     const fetchQuestions = async () => {
         try {
@@ -131,7 +124,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         await axios.post(`${API_URL}/api/exam-paper`, {
             ...data,
             questions: selectedQuestions,
-            sections // Save sections too
+            sections
         });
     } catch (error) {
         console.error('Failed to save draft:', error);
@@ -141,7 +134,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addQuestion = (question: Question, sectionId?: string) => {
-    // Clone to ensure we don't mutate original if referenced elsewhere
     const newQ = { ...question, sectionId };
     setSelectedQuestions((prev) => [...prev, newQ]);
   };
@@ -165,7 +157,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  // Section Management
   const addSection = (section: Section) => {
       setSections(prev => [...prev, section]);
   };
@@ -176,7 +167,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
 
   const removeSection = (sectionId: string) => {
       setSections(prev => prev.filter(s => s.id !== sectionId));
-      // Also remove questions in this section?
       setSelectedQuestions(prev => prev.filter(q => q.sectionId !== sectionId));
   };
 
@@ -189,12 +179,10 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
-  // Exam Type Management
   const addExamType = (type: string) => setExamTypes(prev => [...prev, type]);
   const updateExamType = (oldType: string, newType: string) => setExamTypes(prev => prev.map(t => t === oldType ? newType : t));
   const removeExamType = (type: string) => setExamTypes(prev => prev.filter(t => t !== type));
 
-  // Legacy Group (Deprecated)
   const updateQuestionGroup = (group: QuestionGroup) => {
     setQuestionGroups((prev) => {
         const index = prev.findIndex(g => g.type === group.type);
@@ -221,7 +209,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         questionBank,
         isLoadingQuestions,
         examMeta,
+        currentView,
         setExamMeta,
+        setCurrentView,
         addQuestion,
         removeQuestion,
         updateQuestion,

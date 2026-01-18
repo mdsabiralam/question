@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { BookOpen, FileText, Settings, Menu } from 'lucide-react';
+import { BookOpen, FileText, Settings, Menu, ClipboardCheck } from 'lucide-react';
 import clsx from 'clsx';
+import { useDashboard } from '@/context/DashboardContext';
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { setCurrentView, currentView } = useDashboard();
 
   return (
     <>
@@ -25,10 +27,28 @@ export const Sidebar = () => {
       <nav className="flex-1 overflow-y-auto py-4">
         <ul className="space-y-2">
           <li>
-            <a href="#" className="flex items-center p-3 hover:bg-gray-800 transition-colors justify-start">
+            <button
+                onClick={() => setCurrentView('builder')}
+                className={clsx(
+                    "w-full flex items-center p-3 hover:bg-gray-800 transition-colors justify-start",
+                    currentView === 'builder' && "bg-gray-800 border-l-4 border-blue-500"
+                )}
+            >
               <BookOpen className="w-6 h-6" />
-              <span className="block ml-3">Question Bank</span>
-            </a>
+              <span className="block ml-3">Builder</span>
+            </button>
+          </li>
+          <li>
+            <button
+                onClick={() => setCurrentView('evaluation')}
+                className={clsx(
+                    "w-full flex items-center p-3 hover:bg-gray-800 transition-colors justify-start",
+                    currentView === 'evaluation' && "bg-gray-800 border-l-4 border-purple-500"
+                )}
+            >
+              <ClipboardCheck className="w-6 h-6" />
+              <span className="block ml-3">Evaluation (AI)</span>
+            </button>
           </li>
           <li>
             <a href="#" className="flex items-center p-3 hover:bg-gray-800 transition-colors justify-start">

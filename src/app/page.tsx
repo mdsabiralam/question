@@ -8,14 +8,10 @@ import { QuestionGroupModal } from '@/components/QuestionGroupModal';
 import { ExamSetupModal } from '@/components/ExamSetupModal';
 import { useDashboard } from '@/context/DashboardContext';
 import { QuestionGroup } from '@/types';
-
-// We need a wrapper to access context for saving, but Home is a Server Component by default in Next 13+ unless "use client"
-// But page.tsx already has "use client".
-// However, we need to pass `updateQuestionGroup` to Modal.
-// We also need to state for modal.
+import { EvaluationDashboard } from '@/components/evaluation/EvaluationDashboard';
 
 const DashboardContent = () => {
-    const { updateQuestionGroup, questionGroups } = useDashboard();
+    const { updateQuestionGroup, questionGroups, currentView } = useDashboard();
     const [isSetupOpen, setIsSetupOpen] = useState(false);
 
     const [modalState, setModalState] = useState<{
@@ -23,6 +19,10 @@ const DashboardContent = () => {
         type: 'MCQ' | 'Short Answer' | 'Creative';
         position: { x: number, y: number };
     }>({ isOpen: false, type: 'MCQ', position: { x: 0, y: 0 } });
+
+    if (currentView === 'evaluation') {
+        return <EvaluationDashboard />;
+    }
 
     const handleContextMenu = (e: React.MouseEvent, type?: 'MCQ' | 'Short Answer' | 'Creative') => {
         e.preventDefault();
@@ -34,7 +34,6 @@ const DashboardContent = () => {
     };
 
     const handleOpenGroupSettings = (type: 'MCQ' | 'Short Answer' | 'Creative', e: React.MouseEvent) => {
-        // Position relative to the button
         const rect = (e.target as HTMLElement).getBoundingClientRect();
         setModalState({
             isOpen: true,
