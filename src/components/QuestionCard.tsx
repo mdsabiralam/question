@@ -1,23 +1,32 @@
 import React from 'react';
+import { useDraggable } from '@dnd-kit/core';
 import { Question } from '@/types';
 import { GripVertical } from 'lucide-react';
+import clsx from 'clsx';
 
 interface QuestionCardProps {
   question: Question;
 }
 
 export const QuestionCard = ({ question }: QuestionCardProps) => {
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.setData('questionId', question.id);
-    e.dataTransfer.setData('source', 'draft');
-    e.dataTransfer.effectAllowed = 'copy';
-  };
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `bank-${question.id}`, // Unique ID for DndContext
+    data: {
+      type: 'Question',
+      question,
+      source: 'bank'
+    }
+  });
 
   return (
     <div
-      draggable
-      onDragStart={handleDragStart}
-      className="bg-white p-3 rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing mb-3 group touch-none"
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={clsx(
+        "bg-white p-3 rounded-md shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing mb-3 group touch-none",
+        isDragging && "opacity-50"
+      )}
     >
       <div className="flex items-start gap-2">
         <GripVertical className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
