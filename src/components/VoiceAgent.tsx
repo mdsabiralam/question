@@ -34,12 +34,21 @@ export const VoiceAgent = () => {
     // For now, let's just add 5 random questions from draftQuestions that aren't already added.
 
     // Simple mock implementation
-    if (command.toLowerCase().includes('add 5')) {
+    if (command.toLowerCase().includes('add 5 hard questions')) {
+        // Filter for 'Hard' questions
+        const hardQuestions = draftQuestions.filter(q => q.difficulty === 'Hard');
+
+        let addedCount = 0;
+        for (const q of hardQuestions) {
+            if (addedCount >= 5) break;
+            addQuestion(q);
+            addedCount++;
+        }
+    } else if (command.toLowerCase().includes('add 5')) {
+        // Fallback for generic command
         let addedCount = 0;
         for (const q of draftQuestions) {
             if (addedCount >= 5) break;
-            // logic to add would be handled by context checking duplicates usually,
-            // but here we force add via context
             addQuestion(q);
             addedCount++;
         }

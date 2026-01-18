@@ -8,6 +8,7 @@ export const draftQuestions: Question[] = [
     type: 'MCQ',
     marks: 1,
     class: 'class-10',
+    difficulty: 'Easy',
   },
   {
     id: 'q2',
@@ -16,6 +17,7 @@ export const draftQuestions: Question[] = [
     type: 'Short Answer',
     marks: 5,
     class: 'class-10',
+    difficulty: 'Hard',
   },
   {
     id: 'q3',
@@ -24,6 +26,7 @@ export const draftQuestions: Question[] = [
     type: 'Short Answer',
     marks: 3,
     class: 'class-10',
+    difficulty: 'Medium',
   },
   {
     id: 'q4',
@@ -32,6 +35,7 @@ export const draftQuestions: Question[] = [
     type: 'Creative',
     marks: 10,
     class: 'class-10',
+    difficulty: 'Medium',
   },
   {
     id: 'q5',
@@ -40,6 +44,7 @@ export const draftQuestions: Question[] = [
     type: 'MCQ',
     marks: 1,
     class: 'class-10',
+    difficulty: 'Easy',
   },
   {
     id: 'q6',
@@ -48,5 +53,15 @@ export const draftQuestions: Question[] = [
     type: 'Short Answer',
     marks: 3,
     class: 'class-9',
+    difficulty: 'Medium',
+  },
+  {
+    id: 'q7',
+    title: 'Derive E=mc^2',
+    subject: 'Science',
+    type: 'Creative',
+    marks: 10,
+    class: 'class-10',
+    difficulty: 'Hard',
   },
 ];

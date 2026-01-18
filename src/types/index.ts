@@ -5,6 +5,7 @@ export interface Question {
   type: 'MCQ' | 'Short Answer' | 'Creative';
   marks: number;
   class: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
 }
 
 export interface QuestionGroup {
