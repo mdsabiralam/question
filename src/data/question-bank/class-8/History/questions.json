@@ -3,8 +3,8 @@
     "id": "class-8-History-q1",
     "title": "Sample History Question 1 for class-8",
     "subject": "History",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "MCQ",
+    "marks": 1,
     "class": "class-8",
     "difficulty": "Easy"
   },
@@ -12,19 +12,19 @@
     "id": "class-8-History-q2",
     "title": "Sample History Question 2 for class-8",
     "subject": "History",
-    "type": "MCQ",
-    "marks": 1,
+    "type": "Short Answer",
+    "marks": 5,
     "class": "class-8",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-8-History-q3",
     "title": "Sample History Question 3 for class-8",
     "subject": "History",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-8",
-    "difficulty": "Hard"
+    "difficulty": "Easy"
   },
   {
     "id": "class-8-History-q4",
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-8",
-    "difficulty": "Hard"
+    "difficulty": "Medium"
   },
   {
     "id": "class-8-History-q5",
@@ -43,5 +43,14 @@
     "marks": 5,
     "class": "class-8",
     "difficulty": "Medium"
+  },
+  {
+    "id": "class-8-History-q6",
+    "title": "Sample History Question 6 for class-8",
+    "subject": "History",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-8",
+    "difficulty": "Hard"
   }
 ]

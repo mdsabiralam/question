@@ -3,28 +3,28 @@
     "id": "class-8-English-q1",
     "title": "Sample English Question 1 for class-8",
     "subject": "English",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-8",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-8-English-q2",
+    "title": "Sample English Question 2 for class-8",
+    "subject": "English",
     "type": "Short Answer",
     "marks": 5,
     "class": "class-8",
     "difficulty": "Easy"
   },
   {
-    "id": "class-8-English-q2",
-    "title": "Sample English Question 2 for class-8",
-    "subject": "English",
-    "type": "MCQ",
-    "marks": 1,
-    "class": "class-8",
-    "difficulty": "Hard"
-  },
-  {
     "id": "class-8-English-q3",
     "title": "Sample English Question 3 for class-8",
     "subject": "English",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-8",
-    "difficulty": "Medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-8-English-q4",
@@ -42,6 +42,15 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-8",
-    "difficulty": "Hard"
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-8-English-q6",
+    "title": "Sample English Question 6 for class-8",
+    "subject": "English",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-8",
+    "difficulty": "Easy"
   }
 ]

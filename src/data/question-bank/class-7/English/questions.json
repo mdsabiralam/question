@@ -3,28 +3,28 @@
     "id": "class-7-English-q1",
     "title": "Sample English Question 1 for class-7",
     "subject": "English",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "MCQ",
+    "marks": 1,
     "class": "class-7",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-7-English-q2",
     "title": "Sample English Question 2 for class-7",
     "subject": "English",
-    "type": "MCQ",
-    "marks": 1,
+    "type": "Short Answer",
+    "marks": 5,
     "class": "class-7",
-    "difficulty": "Easy"
+    "difficulty": "Hard"
   },
   {
     "id": "class-7-English-q3",
     "title": "Sample English Question 3 for class-7",
     "subject": "English",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-7",
-    "difficulty": "Hard"
+    "difficulty": "Easy"
   },
   {
     "id": "class-7-English-q4",
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-7",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-7-English-q5",
@@ -42,6 +42,15 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-7",
-    "difficulty": "Easy"
+    "difficulty": "Hard"
+  },
+  {
+    "id": "class-7-English-q6",
+    "title": "Sample English Question 6 for class-7",
+    "subject": "English",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-7",
+    "difficulty": "Medium"
   }
 ]

@@ -3,26 +3,26 @@
     "id": "class-6-Bengali-q1",
     "title": "Sample Bengali Question 1 for class-6",
     "subject": "Bengali",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "MCQ",
+    "marks": 1,
     "class": "class-6",
-    "difficulty": "Hard"
+    "difficulty": "Easy"
   },
   {
     "id": "class-6-Bengali-q2",
     "title": "Sample Bengali Question 2 for class-6",
     "subject": "Bengali",
-    "type": "MCQ",
-    "marks": 1,
+    "type": "Short Answer",
+    "marks": 5,
     "class": "class-6",
-    "difficulty": "Medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-6-Bengali-q3",
     "title": "Sample Bengali Question 3 for class-6",
     "subject": "Bengali",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-6",
     "difficulty": "Easy"
   },
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-6",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-6-Bengali-q5",
@@ -41,6 +41,15 @@
     "subject": "Bengali",
     "type": "Short Answer",
     "marks": 5,
+    "class": "class-6",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-6-Bengali-q6",
+    "title": "Sample Bengali Question 6 for class-6",
+    "subject": "Bengali",
+    "type": "Creative",
+    "marks": 10,
     "class": "class-6",
     "difficulty": "Easy"
   }

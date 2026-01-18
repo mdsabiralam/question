@@ -6,17 +6,26 @@ const path = require('path');
 const subjects = ['Math', 'Science', 'Bengali', 'English', 'History'];
 const classes = ['class-6', 'class-7', 'class-8', 'class-9', 'class-10'];
 const difficulties = ['Easy', 'Medium', 'Hard'];
+const types = ['MCQ', 'Short Answer', 'Creative'];
 
 const generateQuestions = (cls, subject) => {
   const questions = [];
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 6; i++) {
     const difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+    // Cycle through types: 0->MCQ, 1->Short, 2->Creative...
+    const type = types[(i - 1) % types.length];
+
+    // Assign marks based on type for realism
+    let marks = 1;
+    if (type === 'Short Answer') marks = 5;
+    if (type === 'Creative') marks = 10;
+
     questions.push({
       id: `${cls}-${subject}-q${i}`,
       title: `Sample ${subject} Question ${i} for ${cls}`,
       subject: subject,
-      type: i % 2 === 0 ? 'MCQ' : 'Short Answer',
-      marks: i % 2 === 0 ? 1 : 5,
+      type: type,
+      marks: marks,
       class: cls,
       difficulty: difficulty
     });

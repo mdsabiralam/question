@@ -3,17 +3,17 @@
     "id": "class-10-English-q1",
     "title": "Sample English Question 1 for class-10",
     "subject": "English",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "MCQ",
+    "marks": 1,
     "class": "class-10",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-10-English-q2",
     "title": "Sample English Question 2 for class-10",
     "subject": "English",
-    "type": "MCQ",
-    "marks": 1,
+    "type": "Short Answer",
+    "marks": 5,
     "class": "class-10",
     "difficulty": "Medium"
   },
@@ -21,10 +21,10 @@
     "id": "class-10-English-q3",
     "title": "Sample English Question 3 for class-10",
     "subject": "English",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-10",
-    "difficulty": "Medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-10-English-q4",
@@ -42,6 +42,15 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-10",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-10-English-q6",
+    "title": "Sample English Question 6 for class-10",
+    "subject": "English",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-10",
+    "difficulty": "Medium"
   }
 ]

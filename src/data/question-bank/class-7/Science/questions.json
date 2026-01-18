@@ -3,8 +3,8 @@
     "id": "class-7-Science-q1",
     "title": "Sample Science Question 1 for class-7",
     "subject": "Science",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "MCQ",
+    "marks": 1,
     "class": "class-7",
     "difficulty": "Medium"
   },
@@ -12,8 +12,8 @@
     "id": "class-7-Science-q2",
     "title": "Sample Science Question 2 for class-7",
     "subject": "Science",
-    "type": "MCQ",
-    "marks": 1,
+    "type": "Short Answer",
+    "marks": 5,
     "class": "class-7",
     "difficulty": "Medium"
   },
@@ -21,8 +21,8 @@
     "id": "class-7-Science-q3",
     "title": "Sample Science Question 3 for class-7",
     "subject": "Science",
-    "type": "Short Answer",
-    "marks": 5,
+    "type": "Creative",
+    "marks": 10,
     "class": "class-7",
     "difficulty": "Easy"
   },
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-7",
-    "difficulty": "Easy"
+    "difficulty": "Hard"
   },
   {
     "id": "class-7-Science-q5",
@@ -42,6 +42,15 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-7",
-    "difficulty": "Hard"
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-7-Science-q6",
+    "title": "Sample Science Question 6 for class-7",
+    "subject": "Science",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-7",
+    "difficulty": "Medium"
   }
 ]

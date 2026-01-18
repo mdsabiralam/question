@@ -3,28 +3,28 @@
     "id": "class-10-Science-q1",
     "title": "Sample Science Question 1 for class-10",
     "subject": "Science",
-    "type": "Short Answer",
-    "marks": 5,
-    "class": "class-10",
-    "difficulty": "Hard"
-  },
-  {
-    "id": "class-10-Science-q2",
-    "title": "Sample Science Question 2 for class-10",
-    "subject": "Science",
     "type": "MCQ",
     "marks": 1,
     "class": "class-10",
     "difficulty": "Medium"
   },
   {
-    "id": "class-10-Science-q3",
-    "title": "Sample Science Question 3 for class-10",
+    "id": "class-10-Science-q2",
+    "title": "Sample Science Question 2 for class-10",
     "subject": "Science",
     "type": "Short Answer",
     "marks": 5,
     "class": "class-10",
-    "difficulty": "Hard"
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-10-Science-q3",
+    "title": "Sample Science Question 3 for class-10",
+    "subject": "Science",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-10",
+    "difficulty": "Medium"
   },
   {
     "id": "class-10-Science-q4",
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-10",
-    "difficulty": "Easy"
+    "difficulty": "Medium"
   },
   {
     "id": "class-10-Science-q5",
@@ -42,6 +42,15 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-10",
-    "difficulty": "Medium"
+    "difficulty": "Hard"
+  },
+  {
+    "id": "class-10-Science-q6",
+    "title": "Sample Science Question 6 for class-10",
+    "subject": "Science",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-10",
+    "difficulty": "Easy"
   }
 ]
