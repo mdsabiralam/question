@@ -5,10 +5,12 @@ import { Sidebar } from './Sidebar';
 import { DashboardProvider } from '@/context/DashboardContext';
 import { SyncIndicator } from './SyncIndicator';
 import { VoiceAgent } from './VoiceAgent';
+import { DragDropPolyfill } from './DragDropPolyfill';
 
 export const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <DashboardProvider>
+      <DragDropPolyfill />
       <div className="flex h-screen overflow-hidden bg-gray-100 relative">
         <Sidebar />
         <main className="flex-1 overflow-hidden flex flex-col">
