@@ -3,11 +3,15 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye, Download, Save } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 
-export const ExamPaper = () => {
-  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft } = useDashboard();
+interface ExamPaperProps {
+  onOpenGroupSettings?: (type: 'MCQ' | 'Short Answer' | 'Creative', e: React.MouseEvent) => void;
+}
+
+export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
+  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft, questionBank } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
 
   const [schoolName, setSchoolName] = useState('Govt. High School');
@@ -37,7 +41,8 @@ export const ExamPaper = () => {
     const sourceIndex = parseInt(e.dataTransfer.getData('index') || '-1', 10);
 
     if (source === 'draft') {
-        const questionToAdd = draftQuestions.find(q => q.id === questionId);
+        // Try to find in questionBank first (real data), fallback to draftQuestions (mock)
+        const questionToAdd = questionBank.find(q => q.id === questionId) || draftQuestions.find(q => q.id === questionId);
         if (questionToAdd) {
             const isAlreadyAdded = selectedQuestions.some(q => q.id === questionId);
             if (!isAlreadyAdded) {
@@ -77,6 +82,25 @@ export const ExamPaper = () => {
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
         };
         html2pdf().set(opt).from(element).save();
+    }
+  };
+
+  const handleAutoGenerate = () => {
+    if (questionBank.length === 0 && draftQuestions.length === 0) return;
+
+    // Use questionBank if available, else draftQuestions
+    const sourceData = questionBank.length > 0 ? questionBank : draftQuestions;
+
+    // Shuffle
+    const shuffled = [...sourceData].sort(() => 0.5 - Math.random());
+
+    let addedCount = 0;
+    for (const q of shuffled) {
+        if (addedCount >= 5) break;
+        if (!selectedQuestions.some(sq => sq.id === q.id)) {
+            addQuestion(q);
+            addedCount++;
+        }
     }
   };
 
@@ -175,8 +199,19 @@ export const ExamPaper = () => {
             </div>
 
             {selectedQuestions.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-gray-400">
-                    <p>Drag questions here from the Question Bank</p>
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-full mb-2">
+                        <Sparkles className="w-12 h-12 text-blue-500" />
+                    </div>
+                    <p className="text-lg font-medium text-gray-600">Your Exam Paper is Empty</p>
+                    <p className="text-sm text-center max-w-xs">Drag questions from the left, or let AI start for you by picking random questions.</p>
+                    <button
+                        onClick={handleAutoGenerate}
+                        className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-full font-bold shadow-lg hover:bg-blue-700 transition-colors flex items-center gap-2 active:scale-95 touch-manipulation"
+                    >
+                        <Sparkles className="w-5 h-5" />
+                        Auto-Generate Paper
+                    </button>
                 </div>
             ) : (
                 <div className="space-y-6 p-4">
@@ -190,7 +225,18 @@ export const ExamPaper = () => {
                        return (
                            <div key={type}>
                                 <div className="mb-2 font-bold text-gray-800 text-lg border-b-2 border-gray-100 pb-1 flex justify-between items-end">
-                                    <span>{type} Questions</span>
+                                    <div className="flex items-center gap-2">
+                                        <span>{type} Questions</span>
+                                        {/* Gear Icon for Settings */}
+                                        <button
+                                            onClick={(e) => onOpenGroupSettings && onOpenGroupSettings(type as any, e)}
+                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 touch-manipulation"
+                                            title="Group Settings"
+                                        >
+                                            <Settings className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
                                     {groupConfig && (
                                         <span className="text-sm font-normal text-gray-500">
                                             Answer any {numberingFormat === 'bengali' ? toBengali(groupConfig.totalToAnswer) : groupConfig.totalToAnswer} questions

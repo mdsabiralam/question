@@ -31,6 +31,16 @@ const DashboardContent = () => {
         });
     };
 
+    const handleOpenGroupSettings = (type: 'MCQ' | 'Short Answer' | 'Creative', e: React.MouseEvent) => {
+        // Position relative to the button
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        setModalState({
+            isOpen: true,
+            type: type,
+            position: { x: rect.left, y: rect.bottom + 10 }
+        });
+    };
+
     const handleSaveGroup = (group: QuestionGroup) => {
         updateQuestionGroup(group);
         setModalState(prev => ({ ...prev, isOpen: false }));
@@ -49,7 +59,7 @@ const DashboardContent = () => {
                 id="exam-paper-container"
                 onContextMenu={(e) => handleContextMenu(e)}
             >
-                <ExamPaper />
+                <ExamPaper onOpenGroupSettings={handleOpenGroupSettings} />
             </div>
 
             {modalState.isOpen && (
