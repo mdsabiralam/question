@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import axios from 'axios';
 import { Question, QuestionGroup } from '@/types';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 interface ExamMeta {
     schoolName: string;
     examName: string;
@@ -83,7 +85,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchQuestions = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/questions');
+            const response = await axios.get(`${API_URL}/api/questions`);
             setQuestionBank(response.data);
         } catch (error) {
             console.error('Failed to fetch questions:', error);
@@ -97,7 +99,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const saveDraft = async (data: { schoolName: string; examName: string; time: string; totalMarks: number }) => {
     setIsSyncing(true);
     try {
-        await axios.post('http://localhost:5000/api/exam-paper', {
+        await axios.post(`${API_URL}/api/exam-paper`, {
             ...data,
             questions: selectedQuestions
         });
