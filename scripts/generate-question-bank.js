@@ -5,10 +5,12 @@ const path = require('path');
 // We generate a few questions per class per subject
 const subjects = ['Math', 'Science', 'Bengali', 'English', 'History'];
 const classes = ['class-6', 'class-7', 'class-8', 'class-9', 'class-10'];
+const difficulties = ['Easy', 'Medium', 'Hard'];
 
 const generateQuestions = (cls, subject) => {
   const questions = [];
   for (let i = 1; i <= 5; i++) {
+    const difficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
     questions.push({
       id: `${cls}-${subject}-q${i}`,
       title: `Sample ${subject} Question ${i} for ${cls}`,
@@ -16,7 +18,7 @@ const generateQuestions = (cls, subject) => {
       type: i % 2 === 0 ? 'MCQ' : 'Short Answer',
       marks: i % 2 === 0 ? 1 : 5,
       class: cls,
-      difficulty: 'medium'
+      difficulty: difficulty
     });
   }
   return questions;

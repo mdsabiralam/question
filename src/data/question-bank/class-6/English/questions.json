@@ -6,7 +6,7 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-6",
-    "difficulty": "medium"
+    "difficulty": "Hard"
   },
   {
     "id": "class-6-English-q2",
@@ -15,7 +15,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-6",
-    "difficulty": "medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-6-English-q3",
@@ -24,7 +24,7 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-6",
-    "difficulty": "medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-6-English-q4",
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-6",
-    "difficulty": "medium"
+    "difficulty": "Medium"
   },
   {
     "id": "class-6-English-q5",
@@ -42,6 +42,6 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-6",
-    "difficulty": "medium"
+    "difficulty": "Medium"
   }
 ]

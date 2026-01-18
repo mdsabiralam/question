@@ -6,7 +6,7 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-8",
-    "difficulty": "medium"
+    "difficulty": "Hard"
   },
   {
     "id": "class-8-Math-q2",
@@ -15,7 +15,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-8",
-    "difficulty": "medium"
+    "difficulty": "Medium"
   },
   {
     "id": "class-8-Math-q3",
@@ -24,7 +24,7 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-8",
-    "difficulty": "medium"
+    "difficulty": "Easy"
   },
   {
     "id": "class-8-Math-q4",
@@ -33,7 +33,7 @@
     "type": "MCQ",
     "marks": 1,
     "class": "class-8",
-    "difficulty": "medium"
+    "difficulty": "Medium"
   },
   {
     "id": "class-8-Math-q5",
@@ -42,6 +42,6 @@
     "type": "Short Answer",
     "marks": 5,
     "class": "class-8",
-    "difficulty": "medium"
+    "difficulty": "Hard"
   }
 ]
