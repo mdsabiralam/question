@@ -1,24 +1,42 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
-import { toBengali, formatSerial } from '@/utils/helpers';
+import { toBengali, formatSerial, getBoardLabels, SerialFormat } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, FileText, Brain } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
+import { BlockRenderer } from './blocks/BlockRenderer';
 
 interface ExamPaperProps {
-  onOpenGroupSettings?: (type: 'MCQ' | 'Short Answer' | 'Creative', e: React.MouseEvent) => void;
+  onOpenGroupSettings?: (type: string, e: React.MouseEvent) => void;
 }
 
 export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
-  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft, questionBank, examMeta, setExamMeta } = useDashboard();
+  const {
+    selectedQuestions,
+    addQuestionToPaper,
+    removeQuestion,
+    updateQuestion,
+    reorderQuestions,
+    questionGroups,
+    saveDraft,
+    questionBank,
+    examMeta,
+    setExamMeta,
+    classes,
+    examTypes,
+    questionTypes,
+    setIsEvaluationOpen // Import this
+  } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
+  const answerKeyRef = useRef<HTMLDivElement>(null);
 
   // Destructure from Context State
-  const { schoolName, examName, time } = examMeta;
+  const { schoolName, examName, examType, class: selectedClassId, subject, time, board } = examMeta;
+  const labels = getBoardLabels(board);
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [numberingFormat, setNumberingFormat] = useState<'english' | 'bengali' | 'roman'>('bengali');
+  const [numberingFormat, setNumberingFormat] = useState<SerialFormat>('bengali');
   const [showPreview, setShowPreview] = useState(false);
 
   // Local state for editing fields
@@ -31,6 +49,15 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
       setExamMeta(prev => ({ ...prev, [key]: value }));
   };
 
+  // Auto-update subject list when class changes
+  const currentClassSubjects = classes.find(c => c.id === selectedClassId)?.subjects || [];
+
+  useEffect(() => {
+    if (currentClassSubjects.length > 0 && !currentClassSubjects.includes(subject)) {
+        handleMetaChange('subject', currentClassSubjects[0]);
+    }
+  }, [selectedClassId, currentClassSubjects, subject]);
+
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
@@ -38,19 +65,18 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex?: number) => {
     e.preventDefault();
-    e.stopPropagation(); // Stop propagation to avoid double drop handling
+    e.stopPropagation();
 
     const questionId = e.dataTransfer.getData('questionId');
     const source = e.dataTransfer.getData('source');
     const sourceIndex = parseInt(e.dataTransfer.getData('index') || '-1', 10);
 
     if (source === 'draft') {
-        // Try to find in questionBank first (real data), fallback to draftQuestions (mock)
         const questionToAdd = questionBank.find(q => q.id === questionId) || draftQuestions.find(q => q.id === questionId);
         if (questionToAdd) {
             const isAlreadyAdded = selectedQuestions.some(q => q.id === questionId);
             if (!isAlreadyAdded) {
-                addQuestion(questionToAdd);
+                addQuestionToPaper(questionToAdd);
             }
         }
     } else if (source === 'paper' && sourceIndex !== -1 && targetIndex !== undefined) {
@@ -79,37 +105,50 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
         const element = paperRef.current;
         if (!element) return;
         const opt = {
-            margin: 10, // mm
+            margin: [10, 10, 10, 10],
             filename: `${schoolName.replace(/\s+/g, '_')}_Exam.pdf`,
             image: { type: 'jpeg' as const, quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
         html2pdf().set(opt).from(element).save();
     }
   };
 
+  const handleDownloadAnswerKey = async () => {
+      if (typeof window !== 'undefined') {
+          const html2pdf = (await import('html2pdf.js')).default;
+          const element = answerKeyRef.current;
+          if (!element) return;
+
+          const opt = {
+              margin: 10,
+              filename: `${schoolName.replace(/\s+/g, '_')}_AnswerKey.pdf`,
+              image: { type: 'jpeg' as const, quality: 0.98 },
+              html2canvas: { scale: 2 },
+              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+          };
+          html2pdf().set(opt).from(element).save();
+      }
+  };
+
   const handleAutoGenerate = () => {
     if (questionBank.length === 0 && draftQuestions.length === 0) return;
-
-    // Use questionBank if available, else draftQuestions
     const sourceData = questionBank.length > 0 ? questionBank : draftQuestions;
-
-    // Shuffle
     const shuffled = [...sourceData].sort(() => 0.5 - Math.random());
-
     let addedCount = 0;
     for (const q of shuffled) {
         if (addedCount >= 5) break;
         if (!selectedQuestions.some(sq => sq.id === q.id)) {
-            addQuestion(q);
+            addQuestionToPaper(q);
             addedCount++;
         }
     }
   };
 
   return (
-    <div className="h-full flex justify-center overflow-y-auto p-4 md:p-8 bg-gray-200">
+    <div className="h-full flex justify-center overflow-y-auto p-4 md:p-8 bg-gray-200 relative">
       <div
         ref={paperRef}
         onDragOver={handleDragOver}
@@ -125,23 +164,30 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
              {/* Header Section */}
             <div className="text-center mb-6 border-b border-gray-200 pb-4 relative group/header">
                 {/* Format Settings Trigger (visible on hover) */}
-                <div className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 transition-opacity">
-                    <div className="relative group/settings">
-                        <button className="p-1 text-gray-400 hover:text-gray-600">
-                            <Settings2 className="w-5 h-5" />
-                        </button>
-                        <div className="absolute right-0 top-full bg-white shadow-md border border-gray-200 rounded p-2 hidden group-hover/settings:block w-32 z-20">
-                            <p className="text-xs font-semibold text-gray-500 mb-2">Numbering</p>
-                            <select
-                                value={numberingFormat}
-                                onChange={(e) => setNumberingFormat(e.target.value as 'english' | 'bengali' | 'roman')}
-                                className="w-full text-xs border rounded p-1"
-                            >
-                                <option value="bengali">Bengali</option>
-                                <option value="english">English</option>
-                                <option value="roman">Roman</option>
-                            </select>
-                        </div>
+                <div className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 transition-opacity z-20">
+                    <div className="relative group/settings bg-white p-1 rounded shadow border border-gray-200 flex gap-2">
+                        {/* Board Selector */}
+                        <select
+                            value={board}
+                            onChange={(e) => handleMetaChange('board', e.target.value)}
+                            className="text-xs border rounded p-1"
+                        >
+                            <option value="WB">WB Board</option>
+                            <option value="CBSE">CBSE</option>
+                        </select>
+
+                        {/* Numbering Selector */}
+                        <select
+                            value={numberingFormat}
+                            onChange={(e) => setNumberingFormat(e.target.value as SerialFormat)}
+                            className="text-xs border rounded p-1"
+                        >
+                            <option value="bengali">Bengali (১, ২)</option>
+                            <option value="english">English (1, 2)</option>
+                            <option value="roman">Roman (i, ii)</option>
+                            <option value="alpha">Alpha (a, b)</option>
+                            <option value="bengali_alpha">Bengali Alpha (ক, খ)</option>
+                        </select>
                     </div>
                 </div>
 
@@ -153,13 +199,28 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                         className="text-2xl font-bold text-center w-full border-none focus:ring-0 placeholder-gray-300 text-gray-900"
                         placeholder="School Name"
                     />
-                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
+                     <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1 print:hidden" data-html2canvas-ignore>
                         <button
                             onClick={handleAutoGenerate}
                             className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-full"
                             title="Auto-Generate"
                         >
                             <Sparkles className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={handleDownloadAnswerKey}
+                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-full"
+                            title="Download Answer Key"
+                        >
+                            <FileText className="w-5 h-5" />
+                        </button>
+                        {/* AI Evaluation Button */}
+                        <button
+                            onClick={() => setIsEvaluationOpen(true)}
+                            className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full"
+                            title="Evaluate Answer with AI"
+                        >
+                            <Brain className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => saveDraft({ schoolName, examName, time, totalMarks })}
@@ -184,28 +245,57 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                         </button>
                      </div>
                 </div>
-                <div className="flex justify-between items-center px-4 text-sm font-semibold text-gray-700">
-                    <div className="flex gap-2 items-center">
-                        <span>Exam:</span>
+
+                {/* Exam Meta Inputs */}
+                <div className="grid grid-cols-3 gap-4 mb-4 text-sm font-semibold text-gray-700 px-4">
+                     <div className="flex flex-col">
+                        <select
+                            value={examType}
+                            onChange={(e) => handleMetaChange('examType', e.target.value)}
+                            className="border-none focus:ring-0 p-0 font-bold text-gray-800 text-center bg-transparent cursor-pointer hover:bg-gray-50 rounded"
+                        >
+                            {examTypes?.map(t => <option key={t} value={t}>{t}</option>)}
+                        </select>
                         <input
                             type="text"
                             value={examName}
                             onChange={(e) => handleMetaChange('examName', e.target.value)}
-                            className="border-none focus:ring-0 p-0 text-sm font-semibold text-gray-700 w-40"
+                            className="text-xs text-center border-none focus:ring-0 p-0 text-gray-500 placeholder-gray-300"
+                            placeholder="Year/Session"
                         />
-                    </div>
-                    <div>
-                         <span>Time: </span>
-                         <input
-                            type="text"
-                            value={time}
-                            onChange={(e) => handleMetaChange('time', e.target.value)}
-                            className="border-none focus:ring-0 p-0 text-sm font-semibold text-gray-700 w-32 text-right"
-                        />
-                    </div>
-                    <div>
-                        <span>Total Marks: {toBengali(totalMarks)}</span>
-                    </div>
+                     </div>
+
+                     <div className="flex flex-col items-center">
+                        <select
+                            value={selectedClassId}
+                            onChange={(e) => handleMetaChange('class', e.target.value)}
+                            className="border-none focus:ring-0 p-0 font-bold text-gray-800 text-center bg-transparent cursor-pointer hover:bg-gray-50 rounded"
+                        >
+                             {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                        </select>
+                        <select
+                            value={subject}
+                            onChange={(e) => handleMetaChange('subject', e.target.value)}
+                            className="text-xs text-center border-none focus:ring-0 p-0 text-gray-600 bg-transparent cursor-pointer hover:bg-gray-50 rounded"
+                        >
+                            {currentClassSubjects.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                     </div>
+
+                     <div className="text-right">
+                         <div className="flex justify-end items-center gap-1">
+                             <span className="text-gray-500">{labels.time}:</span>
+                             <input
+                                type="text"
+                                value={time}
+                                onChange={(e) => handleMetaChange('time', e.target.value)}
+                                className="border-none focus:ring-0 p-0 font-bold text-gray-800 w-24 text-right"
+                            />
+                         </div>
+                         <div className="text-gray-500 text-xs mt-1">
+                            {labels.totalMarks}: <span className="font-bold text-gray-800">{toBengali(totalMarks)}</span>
+                         </div>
+                     </div>
                 </div>
             </div>
 
@@ -226,23 +316,24 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                 </div>
             ) : (
                 <div className="space-y-6 p-4">
-                   {/* Group by Type */}
-                   {['MCQ', 'Short Answer', 'Creative'].map((type) => {
+                   {/* Group by Question Type Dynamic */}
+                   {questionTypes.map((type, typeIndex) => {
                        const questionsOfType = selectedQuestions.filter(q => q.type === type);
                        if (questionsOfType.length === 0) return null;
 
                        const groupConfig = questionGroups.find(g => g.type === type);
 
                        return (
-                           <div key={type}>
+                           <div key={type} className="break-inside-avoid">
                                 <div className="mb-2 font-bold text-gray-800 text-lg border-b-2 border-gray-100 pb-1 flex justify-between items-end">
                                     <div className="flex items-center gap-2">
-                                        <span>{type} Questions</span>
+                                        <span>{type} {labels.questions}</span>
                                         {/* Gear Icon for Settings */}
                                         <button
-                                            onClick={(e) => onOpenGroupSettings && onOpenGroupSettings(type as any, e)}
-                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 touch-manipulation"
+                                            onClick={(e) => onOpenGroupSettings && onOpenGroupSettings(type, e)}
+                                            className="p-1 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 touch-manipulation print:hidden"
                                             title="Group Settings"
+                                            data-html2canvas-ignore
                                         >
                                             <Settings className="w-4 h-4" />
                                         </button>
@@ -250,7 +341,7 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
 
                                     {groupConfig && (
                                         <span className="text-sm font-normal text-gray-500">
-                                            Answer any {numberingFormat === 'bengali' ? toBengali(groupConfig.totalToAnswer) : groupConfig.totalToAnswer} questions
+                                            {labels.answerAny} {numberingFormat === 'bengali' ? toBengali(groupConfig.totalToAnswer) : groupConfig.totalToAnswer} {labels.outOf}
                                         </span>
                                     )}
                                 </div>
@@ -270,13 +361,14 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                             }}
                                             onDrop={(e) => handleDrop(e, globalIndex)}
                                             onDragOver={handleDragOver}
-                                            className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all touch-none"
+                                            className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all touch-none break-inside-avoid"
                                         >
                                             {/* Remove Button */}
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); removeQuestion(q.id); }}
-                                                className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity z-10"
+                                                className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity z-10 print:hidden"
                                                 title="Remove Question"
+                                                data-html2canvas-ignore
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
@@ -321,11 +413,20 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                                         <span className="font-bold text-gray-500 min-w-[20px]">
                                                             {formatSerial(index, numberingFormat)}.
                                                         </span>
-                                                        <div>
-                                                            <p className="text-gray-900 font-medium">{q.title}</p>
+                                                        <div className="w-full">
+                                                            {/* Render Blocks or Fallback Title */}
+                                                            {q.blocks && q.blocks.length > 0 ? (
+                                                                <div className="space-y-1">
+                                                                    {q.blocks.map(b => (
+                                                                        <BlockRenderer key={b.id} block={b} />
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-gray-900 font-medium">{q.title}</p>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    <span className="text-sm font-semibold text-gray-600">{toBengali(q.marks)}</span>
+                                                    <span className="text-sm font-semibold text-gray-600 ml-2 whitespace-nowrap">{toBengali(q.marks)}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -344,6 +445,33 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                 <p className="text-xs mt-1">Best of Luck</p>
             </div>
         </div>
+      </div>
+
+      {/* Hidden Answer Key Container for Export */}
+      <div
+        ref={answerKeyRef}
+        className="absolute top-0 left-[-9999px] bg-white p-12 w-[210mm] min-h-[297mm]"
+      >
+          <div className="text-center mb-8 border-b-2 border-black pb-4">
+              <h1 className="text-2xl font-bold mb-2">Answer Key</h1>
+              <h2 className="text-xl">{schoolName}</h2>
+              <div className="text-sm mt-2">{examType} Exam - {examMeta.examName}</div>
+              <div className="text-sm">Class: {classes.find(c => c.id === selectedClassId)?.name} | Sub: {subject}</div>
+          </div>
+
+          <div className="space-y-4">
+              {selectedQuestions.map((q, idx) => (
+                  <div key={q.id} className="flex gap-4 border-b border-gray-100 pb-2">
+                      <span className="font-bold min-w-[30px]">{formatSerial(idx, numberingFormat)}.</span>
+                      <div>
+                          <div className="font-medium text-gray-900 text-sm mb-1">Q: {q.title}</div>
+                          <div className="text-green-700 font-semibold bg-green-50 p-2 rounded text-sm">
+                              Ans: {q.answer || "No model answer provided."}
+                          </div>
+                      </div>
+                  </div>
+              ))}
+          </div>
       </div>
 
       {showPreview && (

@@ -3,11 +3,15 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { Question, QuestionGroup, ClassStructure } from '@/types';
-import { INITIAL_CLASSES, INITIAL_QUESTION_TYPES } from '@/data/preloadedData';
+import { INITIAL_CLASSES, INITIAL_QUESTION_TYPES, INITIAL_EXAM_TYPES } from '@/data/preloadedData';
 
 interface ExamMeta {
     schoolName: string;
     examName: string;
+    examType: string;
+    board: 'WB' | 'CBSE';
+    class: string;
+    subject: string;
     time: string;
 }
 
@@ -25,11 +29,15 @@ interface DashboardContextType {
   // New States
   classes: ClassStructure[];
   questionTypes: string[];
+  examTypes: string[];
   isSettingsOpen: boolean;
   setIsSettingsOpen: (isOpen: boolean) => void;
+  isEvaluationOpen: boolean; // New State
+  setIsEvaluationOpen: (isOpen: boolean) => void;
 
   // Actions
-  addQuestion: (question: Question) => void;
+  addQuestionToPaper: (question: Question) => void;
+  createQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
   reorderQuestions: (startIndex: number, endIndex: number) => void;
@@ -46,6 +54,8 @@ interface DashboardContextType {
   deleteSubject: (classId: string, subject: string) => void;
   addQuestionType: (type: string) => void;
   deleteQuestionType: (type: string) => void;
+  addExamType: (type: string) => void;
+  deleteExamType: (type: string) => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -61,15 +71,21 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isEvaluationOpen, setIsEvaluationOpen] = useState(false); // New State
 
   // New Global State
   const [classes, setClasses] = useState<ClassStructure[]>(INITIAL_CLASSES);
   const [questionTypes, setQuestionTypes] = useState<string[]>(INITIAL_QUESTION_TYPES);
+  const [examTypes, setExamTypes] = useState<string[]>(INITIAL_EXAM_TYPES);
 
   // Exam Meta State
   const [examMeta, setExamMeta] = useState<ExamMeta>({
       schoolName: 'Govt. High School',
-      examName: 'Half Yearly Exam 2024',
+      examName: '2024',
+      examType: 'Half Yearly',
+      board: 'WB',
+      class: 'class-10',
+      subject: 'Math',
       time: '2 Hours 30 Minutes'
   });
 
@@ -99,6 +115,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
                   const parsed = JSON.parse(savedSettings);
                   if (parsed.classes) setClasses(parsed.classes);
                   if (parsed.questionTypes) setQuestionTypes(parsed.questionTypes);
+                  if (parsed.examTypes) setExamTypes(parsed.examTypes);
               } catch (e) {
                   console.error("Failed to parse settings", e);
               }
@@ -119,10 +136,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       if (typeof window !== 'undefined') {
           localStorage.setItem('examBuilderSettings', JSON.stringify({
               classes,
-              questionTypes
+              questionTypes,
+              examTypes
           }));
       }
-  }, [classes, questionTypes]);
+  }, [classes, questionTypes, examTypes]);
 
   // Fetch Questions from Backend
   useEffect(() => {
@@ -153,10 +171,12 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const addQuestion = (question: Question) => {
-    // Add to bank (local only for now, ideally post to backend)
+  const createQuestion = (question: Question) => {
     setQuestionBank(prev => [question, ...prev]);
-    // Also select it? Maybe not.
+  };
+
+  const addQuestionToPaper = (question: Question) => {
+    setSelectedQuestions((prev) => [...prev, question]);
   };
 
   const removeQuestion = (questionId: string) => {
@@ -219,6 +239,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const addQuestionType = (type: string) => setQuestionTypes(prev => [...prev, type]);
   const deleteQuestionType = (type: string) => setQuestionTypes(prev => prev.filter(t => t !== type));
 
+  const addExamType = (type: string) => setExamTypes(prev => [...prev, type]);
+  const deleteExamType = (type: string) => setExamTypes(prev => prev.filter(t => t !== type));
+
   return (
     <DashboardContext.Provider
       value={{
@@ -233,9 +256,13 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         setExamMeta,
         classes,
         questionTypes,
+        examTypes,
         isSettingsOpen,
         setIsSettingsOpen,
-        addQuestion,
+        isEvaluationOpen,
+        setIsEvaluationOpen,
+        addQuestionToPaper,
+        createQuestion,
         removeQuestion,
         updateQuestion,
         reorderQuestions,
@@ -249,7 +276,9 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         addSubject,
         deleteSubject,
         addQuestionType,
-        deleteQuestionType
+        deleteQuestionType,
+        addExamType,
+        deleteExamType
       }}
     >
       {children}
