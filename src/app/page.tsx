@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/components/DashboardLayout';
 import { QuestionBank } from '@/components/QuestionBank';
 import { ExamPaper } from '@/components/ExamPaper';
 import { QuestionGroupModal } from '@/components/QuestionGroupModal';
+import { ExamSetupModal } from '@/components/ExamSetupModal';
 import { useDashboard } from '@/context/DashboardContext';
 import { QuestionGroup } from '@/types';
 
@@ -15,6 +16,7 @@ import { QuestionGroup } from '@/types';
 
 const DashboardContent = () => {
     const { updateQuestionGroup, questionGroups } = useDashboard();
+    const [isSetupOpen, setIsSetupOpen] = useState(false);
 
     const [modalState, setModalState] = useState<{
         isOpen: boolean;
@@ -59,7 +61,10 @@ const DashboardContent = () => {
                 id="exam-paper-container"
                 onContextMenu={(e) => handleContextMenu(e)}
             >
-                <ExamPaper onOpenGroupSettings={handleOpenGroupSettings} />
+                <ExamPaper
+                    onOpenGroupSettings={handleOpenGroupSettings}
+                    onOpenSetup={() => setIsSetupOpen(true)}
+                />
             </div>
 
             {modalState.isOpen && (
@@ -72,6 +77,10 @@ const DashboardContent = () => {
                     onSave={handleSaveGroup}
                     onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
                 />
+            )}
+
+            {isSetupOpen && (
+                <ExamSetupModal onClose={() => setIsSetupOpen(false)} />
             )}
         </>
     );

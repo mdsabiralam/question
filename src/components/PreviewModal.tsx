@@ -4,14 +4,17 @@ import React from 'react';
 import { useDashboard } from '@/context/DashboardContext';
 import { X, CheckCircle, AlertCircle, FileCheck } from 'lucide-react';
 import clsx from 'clsx';
+import { toBengali } from '@/utils/helpers';
 
 interface PreviewModalProps {
   onClose: () => void;
-  schoolName: string; // Passed from parent or valid check
+  schoolName: string;
 }
 
 export const PreviewModal = ({ onClose, schoolName }: PreviewModalProps) => {
-  const { selectedQuestions, questionGroups } = useDashboard();
+  const { selectedQuestions, sections, examMeta } = useDashboard();
+
+  const calculatedTotal = sections.reduce((sum, s) => sum + (s.marksPerQuestion * s.questionsToAttempt), 0);
 
   // Validation Logic
   const validations = [
@@ -27,13 +30,20 @@ export const PreviewModal = ({ onClose, schoolName }: PreviewModalProps) => {
       isValid: selectedQuestions.length > 0,
       error: 'No questions added to the paper.'
     },
-    ...questionGroups.map(g => {
-        const count = selectedQuestions.filter(q => q.type === g.type).length;
+    {
+      id: 'totalMarks',
+      label: 'Total Marks Match',
+      isValid: examMeta.declaredTotalMarks === calculatedTotal,
+      error: `Calculated Total (${calculatedTotal}) does not match Declared Total (${examMeta.declaredTotalMarks}).`
+    },
+    ...sections.map(s => {
+        const count = selectedQuestions.filter(q => q.sectionId === s.id).length;
+        const isAttemptValid = s.questionsToAttempt <= count;
         return {
-            id: `group-${g.type}`,
-            label: `${g.type} Group Config`,
-            isValid: count >= g.totalInGroup,
-            error: `Expected ${g.totalInGroup} ${g.type} questions (to match 'out of ${g.totalInGroup}'), found ${count}.`
+            id: `section-${s.id}`,
+            label: `${s.title} Config`,
+            isValid: isAttemptValid,
+            error: `Section "${s.title}" requires attempting ${s.questionsToAttempt}, but only ${count} questions are provided.`
         };
     })
   ];
@@ -61,6 +71,12 @@ export const PreviewModal = ({ onClose, schoolName }: PreviewModalProps) => {
                     </div>
                     <h3 className="text-xl font-bold text-green-700 mb-2">Paper is Valid!</h3>
                     <p className="text-gray-600">All checks passed. You are ready to print or save.</p>
+                    <div className="mt-4 p-4 bg-gray-50 rounded text-left">
+                        <h4 className="font-bold text-sm text-gray-700 mb-2">Summary:</h4>
+                        <p className="text-sm">Exam Type: {examMeta.examType}</p>
+                        <p className="text-sm">Total Marks: {toBengali(calculatedTotal)}</p>
+                        <p className="text-sm">Sections: {sections.length}</p>
+                    </div>
                 </div>
             ) : (
                 <div>
