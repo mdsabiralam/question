@@ -49,7 +49,7 @@ export interface QuestionGroup {
 }
 
 export type BoardType = 'WB' | 'CBSE' | 'Custom';
-export type NumberingStyle = 'bengali' | 'english' | 'roman' | 'bengali_alpha' | 'english_alpha';
+export type NumberingStyle = 'bengali' | 'english' | 'roman' | 'bengali_alpha' | 'english_alpha' | 'bengali_vowel' | 'bengali_1_alpha' | 'bengali_ka_1' | 'bengali_a_1';
 
 export interface ExamMeta {
     schoolName: string;

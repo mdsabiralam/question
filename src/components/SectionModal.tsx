@@ -83,11 +83,15 @@ export const SectionModal = ({ initialConfig, onSave, onClose }: SectionModalPro
                         onChange={(e) => setNumberingStyle(e.target.value as NumberingStyle)}
                         className="w-full border p-2 rounded"
                     >
-                        <option value="bengali">Bengali (১, ২, ৩)</option>
-                        <option value="english">English (1, 2, 3)</option>
-                        <option value="roman">Roman (i, ii, iii)</option>
+                        <option value="bengali">Bengali Numbers (১, ২, ৩)</option>
+                        <option value="english">English Numbers (1, 2, 3)</option>
+                        <option value="roman">Roman Numerals (i, ii, iii)</option>
                         <option value="bengali_alpha">Bengali Letters (ক, খ, গ)</option>
                         <option value="english_alpha">English Letters (a, b, c)</option>
+                        <option value="bengali_vowel">Bengali Vowels (অ, আ, ই)</option>
+                        <option value="bengali_1_alpha">Mixed: ১.ক, ১.খ...</option>
+                        <option value="bengali_ka_1">Mixed: ক.১, ক.২...</option>
+                        <option value="bengali_a_1">Mixed: অ.১, অ.২...</option>
                     </select>
                 </div>
             </div>
