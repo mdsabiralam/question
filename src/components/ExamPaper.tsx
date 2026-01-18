@@ -3,11 +3,11 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye, Download } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download, Save } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 
 export const ExamPaper = () => {
-  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups } = useDashboard();
+  const { selectedQuestions, addQuestion, removeQuestion, updateQuestion, reorderQuestions, questionGroups, saveDraft } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
 
   const [schoolName, setSchoolName] = useState('Govt. High School');
@@ -126,6 +126,13 @@ export const ExamPaper = () => {
                         placeholder="School Name"
                     />
                      <div className="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1">
+                        <button
+                            onClick={() => saveDraft({ schoolName, examName, time, totalMarks })}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-full"
+                            title="Save Draft"
+                        >
+                            <Save className="w-5 h-5" />
+                        </button>
                         <button
                             onClick={handleDownloadPDF}
                             className="p-2 text-purple-600 hover:bg-purple-50 rounded-full"

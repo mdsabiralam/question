@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import axios from 'axios';
 import { Question, QuestionGroup } from '@/types';
 
 interface DashboardContextType {
@@ -9,6 +10,8 @@ interface DashboardContextType {
   selectedClass: string;
   selectedSubject: string;
   isSyncing: boolean;
+  questionBank: Question[];
+  isLoadingQuestions: boolean;
   addQuestion: (question: Question) => void;
   removeQuestion: (questionId: string) => void;
   updateQuestion: (questionId: string, updates: Partial<Question>) => void;
@@ -16,6 +19,7 @@ interface DashboardContextType {
   updateQuestionGroup: (group: QuestionGroup) => void;
   setSelectedClass: (cls: string) => void;
   setSelectedSubject: (subject: string) => void;
+  saveDraft: (data: { schoolName: string; examName: string; time: string; totalMarks: number }) => Promise<void>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
@@ -31,26 +35,51 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [isSyncing, setIsSyncing] = useState(false);
 
-  const triggerSync = () => {
+  // Backend Integration State
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(true);
+
+  // Fetch Questions from Backend
+  useEffect(() => {
+    const fetchQuestions = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/api/questions');
+            setQuestionBank(response.data);
+        } catch (error) {
+            console.error('Failed to fetch questions:', error);
+        } finally {
+            setIsLoadingQuestions(false);
+        }
+    };
+    fetchQuestions();
+  }, []);
+
+  const saveDraft = async (data: { schoolName: string; examName: string; time: string; totalMarks: number }) => {
     setIsSyncing(true);
-    setTimeout(() => setIsSyncing(false), 1000);
+    try {
+        await axios.post('http://localhost:5000/api/exam-paper', {
+            ...data,
+            questions: selectedQuestions
+        });
+    } catch (error) {
+        console.error('Failed to save draft:', error);
+    } finally {
+        setTimeout(() => setIsSyncing(false), 1000);
+    }
   };
 
   const addQuestion = (question: Question) => {
     setSelectedQuestions((prev) => [...prev, question]);
-    triggerSync();
   };
 
   const removeQuestion = (questionId: string) => {
     setSelectedQuestions((prev) => prev.filter((q) => q.id !== questionId));
-    triggerSync();
   };
 
   const updateQuestion = (questionId: string, updates: Partial<Question>) => {
     setSelectedQuestions((prev) =>
       prev.map((q) => (q.id === questionId ? { ...q, ...updates } : q))
     );
-    triggerSync();
   };
 
   const updateQuestionGroup = (group: QuestionGroup) => {
@@ -64,7 +93,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             return [...prev, group];
         }
     });
-    triggerSync();
   };
 
   const reorderQuestions = (startIndex: number, endIndex: number) => {
@@ -74,7 +102,6 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       result.splice(endIndex, 0, removed);
       return result;
     });
-    triggerSync();
   };
 
   return (
@@ -85,6 +112,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         selectedClass,
         selectedSubject,
         isSyncing,
+        questionBank,
+        isLoadingQuestions,
         addQuestion,
         removeQuestion,
         updateQuestion,
@@ -92,6 +121,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
         updateQuestionGroup,
         setSelectedClass,
         setSelectedSubject,
+        saveDraft
       }}
     >
       {children}
