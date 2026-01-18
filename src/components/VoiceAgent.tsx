@@ -1,64 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboard } from '@/context/DashboardContext';
-import { draftQuestions } from '@/data/mockData';
+
+// Define SpeechRecognition types globally for this file
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 export const VoiceAgent = () => {
   const [isListening, setIsListening] = useState(false);
-  const { addQuestion } = useDashboard();
+  const { addQuestion, questionBank } = useDashboard();
   const [transcript, setTranscript] = useState('');
+  const recognitionRef = useRef<any>(null);
 
   const handleVoiceCommand = () => {
-    setIsListening(true);
-    setTranscript('Listening...');
+    if (isListening) {
+       recognitionRef.current?.stop();
+       return;
+    }
 
-    // Simulate listening delay
-    setTimeout(() => {
-        const command = "Add 5 hard questions";
-        setTranscript(command);
+    startListening();
+  };
 
-        // Simulate processing
-        setTimeout(() => {
-            handleProcessCommand(command);
-            setIsListening(false);
-            setTranscript('');
-        }, 1500);
-    }, 2000);
+  const startListening = () => {
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+        alert("Your browser does not support Voice Recognition. Please use Chrome or Edge.");
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+
+    recognition.continuous = false; // Stop after one command
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        setIsListening(true);
+        setTranscript('Listening...');
+    };
+
+    recognition.onresult = (event: any) => {
+        const last = event.results.length - 1;
+        const command = event.results[last][0].transcript;
+        setTranscript(`"${command}"`);
+        handleProcessCommand(command);
+    };
+
+    recognition.onerror = (event: any) => {
+        console.error("Voice Error:", event.error);
+        if (event.error === 'no-speech') {
+             setTranscript('No speech detected.');
+        } else {
+             setTranscript('Error listening.');
+        }
+        setIsListening(false);
+    };
+
+    recognition.onend = () => {
+        setIsListening(false);
+        // Clear transcript after a delay
+        setTimeout(() => setTranscript(''), 3000);
+    };
+
+    recognition.start();
   };
 
   const handleProcessCommand = (command: string) => {
-    // Mock logic: Parse "Add 5 hard questions"
-    // We don't have "difficulty" in Question type, but let's just add random questions
-    // or filter by some criteria if we had it.
-    // For now, let's just add 5 random questions from draftQuestions that aren't already added.
+    const cmd = command.toLowerCase();
 
-    // Simple mock implementation
-    if (command.toLowerCase().includes('add 5 hard questions')) {
-        // Filter for 'Hard' questions
-        const hardQuestions = draftQuestions.filter(q => q.difficulty === 'Hard');
+    // Logic: "Add 5 hard questions"
+    if (cmd.includes('add') && cmd.includes('hard') && cmd.includes('questions')) {
+        // Extract number? or default to 5
+        const limit = 5;
+
+        // Filter from Context Question Bank
+        const hardQuestions = questionBank.filter(q => q.difficulty === 'Hard');
 
         let addedCount = 0;
         for (const q of hardQuestions) {
-            if (addedCount >= 5) break;
+            if (addedCount >= limit) break;
             addQuestion(q);
             addedCount++;
         }
-    } else if (command.toLowerCase().includes('add 5')) {
-        // Fallback for generic command
-        let addedCount = 0;
-        for (const q of draftQuestions) {
-            if (addedCount >= 5) break;
-            addQuestion(q);
-            addedCount++;
-        }
+        setTranscript(`Added ${addedCount} Hard Questions`);
+    } else if (cmd.includes('add') && cmd.includes('questions')) {
+         // Generic add
+         let addedCount = 0;
+         for (const q of questionBank) {
+             if (addedCount >= 5) break;
+             addQuestion(q);
+             addedCount++;
+         }
+         setTranscript(`Added ${addedCount} Questions`);
+    } else {
+        setTranscript("Command not recognized.");
     }
   };
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2">
       <AnimatePresence>
-        {isListening && (
+        {transcript && (
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
