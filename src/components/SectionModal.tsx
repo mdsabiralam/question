@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Section } from '@/types';
+import { Section, NumberingStyle } from '@/types';
 import { toBengali } from '@/utils/helpers';
 import { X, Calculator } from 'lucide-react';
 
@@ -17,6 +17,7 @@ export const SectionModal = ({ initialConfig, onSave, onClose }: SectionModalPro
   const [marksPerQuestion, setMarksPerQuestion] = useState(initialConfig?.marksPerQuestion || 1);
   const [questionsToAttempt, setQuestionsToAttempt] = useState(initialConfig?.questionsToAttempt || 1);
   const [totalQuestionsGiven, setTotalQuestionsGiven] = useState(initialConfig?.totalQuestionsGiven || 1);
+  const [numberingStyle, setNumberingStyle] = useState<NumberingStyle>(initialConfig?.numberingStyle || 'bengali');
   const [error, setError] = useState<string | null>(null);
 
   const handleSave = () => {
@@ -35,7 +36,8 @@ export const SectionModal = ({ initialConfig, onSave, onClose }: SectionModalPro
       questionType,
       marksPerQuestion,
       questionsToAttempt,
-      totalQuestionsGiven
+      totalQuestionsGiven,
+      numberingStyle
     });
   };
 
@@ -61,18 +63,33 @@ export const SectionModal = ({ initialConfig, onSave, onClose }: SectionModalPro
                 />
             </div>
 
-            <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Question Type</label>
-                <select
-                    value={questionType}
-                    onChange={(e) => setQuestionType(e.target.value as any)}
-                    className="w-full border p-2 rounded"
-                >
-                    <option value="MCQ">MCQ</option>
-                    <option value="Short Answer">Short Answer</option>
-                    <option value="Creative">Creative</option>
-                </select>
-                <p className="text-xs text-gray-500 mt-1">Only questions of this type can be dropped here.</p>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Question Type</label>
+                    <select
+                        value={questionType}
+                        onChange={(e) => setQuestionType(e.target.value as any)}
+                        className="w-full border p-2 rounded"
+                    >
+                        <option value="MCQ">MCQ</option>
+                        <option value="Short Answer">Short Answer</option>
+                        <option value="Creative">Creative</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">Serial Numbering</label>
+                    <select
+                        value={numberingStyle}
+                        onChange={(e) => setNumberingStyle(e.target.value as NumberingStyle)}
+                        className="w-full border p-2 rounded"
+                    >
+                        <option value="bengali">Bengali (১, ২, ৩)</option>
+                        <option value="english">English (1, 2, 3)</option>
+                        <option value="roman">Roman (i, ii, iii)</option>
+                        <option value="bengali_alpha">Bengali Letters (ক, খ, গ)</option>
+                        <option value="english_alpha">English Letters (a, b, c)</option>
+                    </select>
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

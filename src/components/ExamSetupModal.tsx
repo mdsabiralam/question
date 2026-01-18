@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDashboard } from '@/context/DashboardContext';
 import { X, Plus, Trash2, Edit2, Check, Settings } from 'lucide-react';
+import { BoardType } from '@/types';
 import clsx from 'clsx';
 
 export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
@@ -161,16 +162,29 @@ export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
                 </div>
             </div>
 
-             {/* Total Marks Declaration */}
-             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">মোট নম্বর (Total Marks)</label>
-                <input
-                    type="number"
-                    value={examMeta.declaredTotalMarks}
-                    onChange={(e) => setExamMeta(prev => ({ ...prev, declaredTotalMarks: parseInt(e.target.value) || 0 }))}
-                    className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">This will be used to validate the final paper.</p>
+             {/* Board & Total Marks */}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Board Format</label>
+                    <select
+                        value={examMeta.board || 'WB'}
+                        onChange={(e) => setExamMeta(prev => ({ ...prev, board: e.target.value as BoardType }))}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="WB">West Bengal (Bengali)</option>
+                        <option value="CBSE">CBSE (English)</option>
+                        <option value="Custom">Custom</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">মোট নম্বর (Total Marks)</label>
+                    <input
+                        type="number"
+                        value={examMeta.declaredTotalMarks}
+                        onChange={(e) => setExamMeta(prev => ({ ...prev, declaredTotalMarks: parseInt(e.target.value) || 0 }))}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
             </div>
 
         </div>

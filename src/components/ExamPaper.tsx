@@ -3,11 +3,13 @@ import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
 import { toBengali, formatSerial } from '@/utils/helpers';
 import clsx from 'clsx';
-import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, Plus, AlertTriangle, FileEdit, PenTool } from 'lucide-react';
+import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, Plus, AlertTriangle, FileEdit, PenTool, FileKey } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 import { SectionModal } from './SectionModal';
 import { QuestionEditorModal } from './question-editor/QuestionEditorModal';
 import { BlockRenderer } from './question-editor/BlockRenderer';
+import { PrintablePaper } from './PrintablePaper';
+import { PrintableAnswerKey } from './PrintableAnswerKey';
 import { Section, Question } from '@/types';
 
 interface ExamPaperProps {
@@ -22,6 +24,10 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
       sections, addSection, updateSection, removeSection, reorderSections
   } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
+
+  // Refs for printing
+  const printPaperRef = useRef<HTMLDivElement>(null);
+  const printKeyRef = useRef<HTMLDivElement>(null);
 
   const { schoolName, examName, examType, time, declaredTotalMarks } = examMeta;
 
@@ -97,18 +103,24 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
   };
 
   const handleSaveRichEdit = (updatedQ: Question) => {
-      updateQuestion(updatedQ.id, { blocks: updatedQ.blocks, title: updatedQ.title });
+      updateQuestion(updatedQ.id, { blocks: updatedQ.blocks, title: updatedQ.title, answer: updatedQ.answer });
       setQuestionForRichEdit(null);
   };
 
-  const handleDownloadPDF = async () => {
+  const handleExport = async (type: 'paper' | 'key') => {
     if (typeof window !== 'undefined') {
         const html2pdf = (await import('html2pdf.js')).default;
-        const element = paperRef.current;
-        if (!element) return;
+        const element = type === 'paper' ? printPaperRef.current : printKeyRef.current;
+        const filename = `${schoolName.replace(/\s+/g, '_')}_${type === 'paper' ? 'Exam' : 'AnswerKey'}.pdf`;
+
+        if (!element) {
+            console.error("Print ref not found");
+            return;
+        }
+
         const opt = {
             margin: 10,
-            filename: `${schoolName.replace(/\s+/g, '_')}_Exam.pdf`,
+            filename: filename,
             image: { type: 'jpeg' as const, quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
@@ -197,13 +209,25 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                         >
                             <Save className="w-5 h-5" />
                         </button>
-                        <button
-                            onClick={handleDownloadPDF}
-                            className="p-2 text-purple-600 hover:bg-purple-50 rounded-full"
-                            title="Download PDF"
-                        >
-                            <Download className="w-5 h-5" />
-                        </button>
+
+                        <div className="flex bg-gray-100 rounded-full p-0.5">
+                            <button
+                                onClick={() => handleExport('paper')}
+                                className="p-2 text-purple-600 hover:bg-white rounded-full transition-all shadow-sm"
+                                title="Download Question Paper"
+                            >
+                                <Download className="w-5 h-5" />
+                            </button>
+                            <div className="w-px bg-gray-300 my-1 mx-0.5"></div>
+                            <button
+                                onClick={() => handleExport('key')}
+                                className="p-2 text-orange-600 hover:bg-white rounded-full transition-all shadow-sm"
+                                title="Download Answer Key"
+                            >
+                                <FileKey className="w-5 h-5" />
+                            </button>
+                        </div>
+
                         <button
                             onClick={() => setShowPreview(true)}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
@@ -357,7 +381,7 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                                                         >
                                                             <div className="flex gap-3 w-full">
                                                                 <span className="font-bold text-gray-500 min-w-[20px]">
-                                                                    {formatSerial(index, numberingFormat)}.
+                                                                    {formatSerial(index, section.numberingStyle)}.
                                                                 </span>
                                                                 <div className="w-full">
                                                                     {q.blocks && q.blocks.length > 0 ? (
@@ -365,7 +389,7 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
                                                                             {q.blocks.map(block => <BlockRenderer key={block.id} block={block} />)}
                                                                         </div>
                                                                     ) : (
-                                                                        <p className="text-gray-900 font-medium">{q.title}</p>
+                                                                        <p className="text-gray-900 font-medium whitespace-pre-wrap">{q.title}</p>
                                                                     )}
                                                                 </div>
                                                             </div>
@@ -422,6 +446,12 @@ export const ExamPaper = ({ onOpenGroupSettings, onOpenSetup }: ExamPaperProps) 
               onClose={() => setQuestionForRichEdit(null)}
           />
       )}
+
+      {/* Hidden Print Templates */}
+      <div className="fixed top-0 left-0 -z-50 opacity-0 pointer-events-none overflow-hidden h-0 w-0">
+         <PrintablePaper ref={printPaperRef} examMeta={examMeta} sections={sections} questions={selectedQuestions} />
+         <PrintableAnswerKey ref={printKeyRef} examMeta={examMeta} sections={sections} questions={selectedQuestions} />
+      </div>
     </div>
   );
 };

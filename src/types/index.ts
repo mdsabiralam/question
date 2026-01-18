@@ -37,6 +37,7 @@ export interface Question {
   difficulty?: 'Easy' | 'Medium' | 'Hard';
   sectionId?: string;
   blocks?: QuestionBlock[];
+  answer?: string; // Model answer
 }
 
 export interface QuestionGroup {
@@ -47,10 +48,24 @@ export interface QuestionGroup {
   totalInGroup: number;
 }
 
+export type BoardType = 'WB' | 'CBSE' | 'Custom';
+export type NumberingStyle = 'bengali' | 'english' | 'roman' | 'bengali_alpha' | 'english_alpha';
+
+export interface ExamMeta {
+    schoolName: string;
+    examName: string;
+    examType: string;
+    time: string;
+    declaredTotalMarks: number;
+    board?: BoardType;
+}
+
 export interface Section {
   id: string;
   title: string;
   questionType: 'MCQ' | 'Short Answer' | 'Creative';
   questionsToAttempt: number;
   marksPerQuestion: number;
+  totalQuestionsGiven: number;
+  numberingStyle?: NumberingStyle;
 }

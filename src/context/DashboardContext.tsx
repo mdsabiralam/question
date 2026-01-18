@@ -2,17 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
-import { Question, QuestionGroup, Section } from '@/types';
+import { Question, QuestionGroup, Section, ExamMeta } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-interface ExamMeta {
-    schoolName: string;
-    examName: string; // Specific title, e.g. "Math Weekly Test 1"
-    examType: string; // e.g. "Weekly Test"
-    time: string;
-    declaredTotalMarks: number;
-}
 
 interface DashboardContextType {
   selectedQuestions: Question[];
@@ -81,7 +73,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
       examName: 'Half Yearly Exam 2024',
       examType: 'Annual Exam',
       time: '2 Hours 30 Minutes',
-      declaredTotalMarks: 100
+      declaredTotalMarks: 100,
+      board: 'WB'
   });
 
   // Backend Integration State

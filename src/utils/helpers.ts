@@ -8,13 +8,21 @@ export const toBengali = (num: number | string): string => {
   }).join('');
 };
 
-export const formatSerial = (index: number, format: 'english' | 'bengali' | 'roman' = 'bengali'): string => {
+export const getBengaliAlpha = (index: number) => {
+    const letters = ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 'চ', 'ছ', 'জ', 'ঝ', 'ঞ', 'ট', 'ঠ'];
+    return letters[index] || toBengali(index + 1);
+};
+
+export const formatSerial = (index: number, format: string = 'bengali'): string => {
   const num = index + 1;
   switch (format) {
     case 'english':
       return num.toString();
+    case 'english_alpha':
+      return String.fromCharCode(97 + (index % 26));
+    case 'bengali_alpha':
+        return getBengaliAlpha(index);
     case 'roman':
-        // Simple roman numeral implementation for small numbers
         const lookup: {[key: string]: number} = {M:1000,CM:900,D:500,CD:400,C:100,XC:90,L:50,XL:40,X:10,IX:9,V:5,IV:4,I:1};
         let roman = '';
         let i = num;

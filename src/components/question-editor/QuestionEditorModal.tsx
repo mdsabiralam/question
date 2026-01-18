@@ -18,6 +18,7 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
       { id: '1', type: 'text', content: question.title } // Default to existing title if no blocks
   ]);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(blocks[0]?.id || null);
+  const [answer, setAnswer] = useState(question.answer || '');
 
   const handleAddBlock = (type: BlockType) => {
       const newBlock: QuestionBlock = {
@@ -60,24 +61,21 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
   };
 
   const handleSave = () => {
-      // Generate plain text title from blocks for backward compatibility/search
-      // If first block is text, use it. Else "Rich Content Question"
       const firstTextBlock = blocks.find(b => b.type === 'text');
       const fallbackTitle = firstTextBlock ? (firstTextBlock.content as string).substring(0, 100) : "Rich Content Question";
 
       onSave({
           ...question,
-          title: question.title || fallbackTitle, // Keep original title or update if empty? Maybe just update blocks.
-          // Actually, if I edit blocks, I should probably update title if it was simple.
-          // But safer to keep 'title' field for summary list.
-          blocks
+          title: question.title || fallbackTitle,
+          blocks,
+          answer
       });
       onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[85vh] flex flex-col">
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-lg">
             <h2 className="text-lg font-bold text-gray-800">Advanced Question Editor</h2>
@@ -87,7 +85,7 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
         <div className="flex-1 flex overflow-hidden">
             {/* Sidebar: Block List */}
             <div className="w-1/3 border-r bg-gray-50 flex flex-col">
-                <div className="p-3 border-b bg-white">
+                <div className="p-3 border-b bg-white flex-1 overflow-y-auto">
                     <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Structure</p>
                     <div className="space-y-2">
                         {blocks.map((block, index) => (
@@ -111,7 +109,7 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
                         ))}
                     </div>
                 </div>
-                <div className="p-3 grid grid-cols-2 gap-2 mt-auto">
+                <div className="p-3 grid grid-cols-2 gap-2 mt-auto border-t">
                     <button onClick={() => handleAddBlock('text')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><Type className="w-4 h-4" /> Text</button>
                     <button onClick={() => handleAddBlock('math')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><Calculator className="w-4 h-4" /> Math</button>
                     <button onClick={() => handleAddBlock('image')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><ImageIcon className="w-4 h-4" /> Image</button>
@@ -134,6 +132,17 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
                     </div>
                 )}
             </div>
+        </div>
+
+        {/* Model Answer Section */}
+        <div className="p-4 bg-yellow-50 border-t border-yellow-200">
+            <label className="block text-xs font-bold text-yellow-800 mb-1 uppercase">Model Answer / Key (Teacher Only)</label>
+            <textarea
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                className="w-full h-16 p-2 border border-yellow-300 rounded bg-yellow-50/50 text-sm focus:ring-2 focus:ring-yellow-500 outline-none resize-none"
+                placeholder="Enter the correct answer or key points..."
+            />
         </div>
 
         {/* Footer */}
