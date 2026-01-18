@@ -1,0 +1,56 @@
+[
+  {
+    "id": "class-9-Bengali-q1",
+    "title": "Sample Bengali Question 1 for class-9",
+    "subject": "Bengali",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-9-Bengali-q2",
+    "title": "Sample Bengali Question 2 for class-9",
+    "subject": "Bengali",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "Easy"
+  },
+  {
+    "id": "class-9-Bengali-q3",
+    "title": "Sample Bengali Question 3 for class-9",
+    "subject": "Bengali",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-9",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-9-Bengali-q4",
+    "title": "Sample Bengali Question 4 for class-9",
+    "subject": "Bengali",
+    "type": "MCQ",
+    "marks": 1,
+    "class": "class-9",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-9-Bengali-q5",
+    "title": "Sample Bengali Question 5 for class-9",
+    "subject": "Bengali",
+    "type": "Short Answer",
+    "marks": 5,
+    "class": "class-9",
+    "difficulty": "Medium"
+  },
+  {
+    "id": "class-9-Bengali-q6",
+    "title": "Sample Bengali Question 6 for class-9",
+    "subject": "Bengali",
+    "type": "Creative",
+    "marks": 10,
+    "class": "class-9",
+    "difficulty": "Easy"
+  }
+]
