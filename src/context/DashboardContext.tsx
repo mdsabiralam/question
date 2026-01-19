@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { Question, QuestionGroup, Section, ExamMeta } from '@/types';
+import { logEvent } from '@/utils/eventLogger';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -126,6 +127,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             questions: selectedQuestions,
             sections
         });
+
+        // Log "save_question_paper" event silently
+        logEvent('save_question_paper', {
+            examType: data.examType,
+            schoolName: data.schoolName,
+            questionCount: selectedQuestions.length
+        });
+
     } catch (error) {
         console.error('Failed to save draft:', error);
     } finally {
@@ -182,6 +191,21 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const addExamType = (type: string) => setExamTypes(prev => [...prev, type]);
   const updateExamType = (oldType: string, newType: string) => setExamTypes(prev => prev.map(t => t === oldType ? newType : t));
   const removeExamType = (type: string) => setExamTypes(prev => prev.filter(t => t !== type));
+
+  // Debounced Logging for Class and Subject
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          logEvent('select_class', { class: selectedClass });
+      }, 1000);
+      return () => clearTimeout(timer);
+  }, [selectedClass]);
+
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          logEvent('select_subject', { subject: selectedSubject });
+      }, 1000);
+      return () => clearTimeout(timer);
+  }, [selectedSubject]);
 
   const updateQuestionGroup = (group: QuestionGroup) => {
     setQuestionGroups((prev) => {
