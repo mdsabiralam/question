@@ -23,7 +23,9 @@ const Question = require('./models/Question');
 const ExamPaper = require('./models/ExamPaper');
 const EventStore = require('./models/EventStore');
 const AICache = require('./models/AICache');
+const ConversationState = require('./models/ConversationState');
 const { upload } = require('./config/cloudinary');
+const { processMessage } = require('./utils/stateMachine');
 
 // Seed Data
 const seedQuestions = [
@@ -249,6 +251,38 @@ app.post('/api/ai-completion', async (req, res) => {
     } catch (error) {
         console.error("AI Service Error:", error);
         res.status(500).json({ error: "AI Processing Failed" });
+    }
+});
+
+// Chat / Conversation API (State Machine)
+app.post('/api/chat', async (req, res) => {
+    try {
+        const { userId, message } = req.body;
+        if (!userId || !message) return res.status(400).json({ error: 'Missing fields' });
+
+        // Get State
+        let conv = await ConversationState.findOne({ userId });
+        if (!conv) {
+            conv = new ConversationState({ userId });
+        }
+
+        // Process
+        const { nextState, reply, contextUpdates } = processMessage(conv.currentState, message, conv.context);
+
+        // Update State
+        conv.currentState = nextState;
+        if (contextUpdates) {
+            // Merge existing context with updates
+            conv.context = { ...(conv.context || {}), ...contextUpdates };
+            // Note: Mongoose Mixed type requires marking modified if strict
+            conv.markModified('context');
+        }
+        await conv.save();
+
+        res.json({ reply, state: nextState });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Chat Error' });
     }
 });
 
