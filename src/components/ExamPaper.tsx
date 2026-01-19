@@ -1,11 +1,35 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDashboard } from '@/context/DashboardContext';
 import { draftQuestions } from '@/data/mockData';
-import { toBengali, formatSerial, getBoardLabels, SerialFormat } from '@/utils/helpers';
+import { toBengali, formatSerial, SerialFormat } from '@/utils/helpers';
 import clsx from 'clsx';
 import { Trash2, X, Check, Settings2, Eye, Download, Save, Sparkles, Settings, FileText, Brain } from 'lucide-react';
 import { PreviewModal } from './PreviewModal';
 import { BlockRenderer } from './blocks/BlockRenderer';
+
+// Helper inlined due to import issues
+const getBoardLabels = (board: string) => {
+    if (board === 'CBSE') {
+        return {
+            totalMarks: 'Total Marks',
+            time: 'Time',
+            section: 'Section',
+            question: 'Question',
+            answerAny: 'Answer any',
+            outOf: 'out of',
+            questions: 'questions'
+        };
+    }
+    return {
+        totalMarks: 'পূর্ণমান',
+        time: 'সময়',
+        section: 'বিভাগ',
+        question: 'প্রশ্ন',
+        answerAny: 'যে কোনো',
+        outOf: 'টি প্রশ্নের উত্তর দাও (মোট',
+        questions: 'টি)'
+    };
+};
 
 interface ExamPaperProps {
   onOpenGroupSettings?: (type: string, e: React.MouseEvent) => void;
@@ -26,12 +50,11 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
     classes,
     examTypes,
     questionTypes,
-    setIsEvaluationOpen // Import this
+    setIsEvaluationOpen
   } = useDashboard();
   const paperRef = useRef<HTMLDivElement>(null);
   const answerKeyRef = useRef<HTMLDivElement>(null);
 
-  // Destructure from Context State
   const { schoolName, examName, examType, class: selectedClassId, subject, time, board } = examMeta;
   const labels = getBoardLabels(board);
 
@@ -39,7 +62,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
   const [numberingFormat, setNumberingFormat] = useState<SerialFormat>('bengali');
   const [showPreview, setShowPreview] = useState(false);
 
-  // Local state for editing fields
   const [editTitle, setEditTitle] = useState('');
   const [editMarks, setEditMarks] = useState(0);
 
@@ -49,7 +71,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
       setExamMeta(prev => ({ ...prev, [key]: value }));
   };
 
-  // Auto-update subject list when class changes
   const currentClassSubjects = classes.find(c => c.id === selectedClassId)?.subjects || [];
 
   useEffect(() => {
@@ -155,18 +176,15 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
         onDrop={(e) => handleDrop(e)}
         className={clsx(
           "bg-white shadow-lg transition-all duration-300",
-          "w-full max-w-[210mm] min-h-[297mm]", // A4 Dimensions roughly
+          "w-full max-w-[210mm] min-h-[297mm]",
           "p-8 md:p-12",
           "flex flex-col relative"
         )}
       >
         <div className="border border-dashed border-gray-200 h-full rounded flex-1 flex flex-col">
-             {/* Header Section */}
             <div className="text-center mb-6 border-b border-gray-200 pb-4 relative group/header">
-                {/* Format Settings Trigger (visible on hover) */}
                 <div className="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 transition-opacity z-20">
                     <div className="relative group/settings bg-white p-1 rounded shadow border border-gray-200 flex gap-2">
-                        {/* Board Selector */}
                         <select
                             value={board}
                             onChange={(e) => handleMetaChange('board', e.target.value)}
@@ -176,7 +194,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                             <option value="CBSE">CBSE</option>
                         </select>
 
-                        {/* Numbering Selector */}
                         <select
                             value={numberingFormat}
                             onChange={(e) => setNumberingFormat(e.target.value as SerialFormat)}
@@ -214,7 +231,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                         >
                             <FileText className="w-5 h-5" />
                         </button>
-                        {/* AI Evaluation Button */}
                         <button
                             onClick={() => setIsEvaluationOpen(true)}
                             className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full"
@@ -246,7 +262,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                      </div>
                 </div>
 
-                {/* Exam Meta Inputs */}
                 <div className="grid grid-cols-3 gap-4 mb-4 text-sm font-semibold text-gray-700 px-4">
                      <div className="flex flex-col">
                         <select
@@ -316,7 +331,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                 </div>
             ) : (
                 <div className="space-y-6 p-4">
-                   {/* Group by Question Type Dynamic */}
                    {questionTypes.map((type, typeIndex) => {
                        const questionsOfType = selectedQuestions.filter(q => q.type === type);
                        if (questionsOfType.length === 0) return null;
@@ -328,7 +342,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                 <div className="mb-2 font-bold text-gray-800 text-lg border-b-2 border-gray-100 pb-1 flex justify-between items-end">
                                     <div className="flex items-center gap-2">
                                         <span>{type} {labels.questions}</span>
-                                        {/* Gear Icon for Settings */}
                                         <button
                                             onClick={(e) => onOpenGroupSettings && onOpenGroupSettings(type, e)}
                                             className="p-1 text-gray-400 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50 touch-manipulation print:hidden"
@@ -347,7 +360,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                 </div>
                                 <div className="space-y-3">
                                     {questionsOfType.map((q, index) => {
-                                        // Find global index for reordering
                                         const globalIndex = selectedQuestions.findIndex(sq => sq.id === q.id);
 
                                         return (
@@ -363,7 +375,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                             onDragOver={handleDragOver}
                                             className="p-3 border border-gray-100 rounded hover:bg-gray-50 group relative transition-all touch-none break-inside-avoid"
                                         >
-                                            {/* Remove Button */}
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); removeQuestion(q.id); }}
                                                 className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity z-10 print:hidden"
@@ -414,7 +425,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                                                             {formatSerial(index, numberingFormat)}.
                                                         </span>
                                                         <div className="w-full">
-                                                            {/* Render Blocks or Fallback Title */}
                                                             {q.blocks && q.blocks.length > 0 ? (
                                                                 <div className="space-y-1">
                                                                     {q.blocks.map(b => (
@@ -439,7 +449,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
                 </div>
             )}
 
-            {/* Footer Section */}
             <div className="mt-auto pt-8 text-center text-sm text-gray-400 font-medium border-t border-gray-100">
                 <p>Generated by ExamBuilder</p>
                 <p className="text-xs mt-1">Best of Luck</p>
@@ -447,7 +456,6 @@ export const ExamPaper = ({ onOpenGroupSettings }: ExamPaperProps) => {
         </div>
       </div>
 
-      {/* Hidden Answer Key Container for Export */}
       <div
         ref={answerKeyRef}
         className="absolute top-0 left-[-9999px] bg-white p-12 w-[210mm] min-h-[297mm]"

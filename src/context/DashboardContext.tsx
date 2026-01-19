@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { Question, QuestionGroup, ClassStructure } from '@/types';
-import { INITIAL_CLASSES, INITIAL_QUESTION_TYPES, INITIAL_EXAM_TYPES } from '@/data/preloadedData';
+import { INITIAL_CLASSES, INITIAL_QUESTION_TYPES } from '@/data/preloadedData';
 
 interface ExamMeta {
     schoolName: string;
@@ -79,6 +79,7 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [examTypes, setExamTypes] = useState<string[]>(INITIAL_EXAM_TYPES);
 
   // Exam Meta State
+const INITIAL_EXAM_TYPES = ["Half Yearly", "Annual", "Class Test", "Unit Test", "Pre-Test", "Test"];
   const [examMeta, setExamMeta] = useState<ExamMeta>({
       schoolName: 'Govt. High School',
       examName: '2024',
