@@ -149,6 +149,38 @@ app.post('/api/log-event', async (req, res) => {
     }
 });
 
+// Suggestion API
+app.get('/api/user-suggestions', async (req, res) => {
+    try {
+        const userId = 'teacher-123'; // Mock ID matching logEvent
+
+        // Frequent Class
+        const classStats = await EventStore.aggregate([
+            { $match: { userId, intent: 'save_question_paper', 'params.class': { $exists: true } } },
+            { $group: { _id: "$params.class", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 1 }
+        ]);
+
+        // Frequent Subject
+        const subjectStats = await EventStore.aggregate([
+            { $match: { userId, intent: 'save_question_paper', 'params.subject': { $exists: true } } },
+            { $group: { _id: "$params.subject", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 1 }
+        ]);
+
+        const suggestions = {};
+        if (classStats.length > 0) suggestions.class = classStats[0]._id;
+        if (subjectStats.length > 0) suggestions.subject = subjectStats[0]._id;
+
+        res.json(suggestions);
+    } catch (error) {
+        console.error('Suggestion Error:', error);
+        res.status(500).json({});
+    }
+});
+
 // Cloud Sync Upload API
 app.post('/api/sync-cloud', upload.single('file'), (req, res) => {
     if (!req.file) {

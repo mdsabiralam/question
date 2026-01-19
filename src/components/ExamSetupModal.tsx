@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDashboard } from '@/context/DashboardContext';
-import { X, Plus, Trash2, Edit2, Check, Settings } from 'lucide-react';
+import { X, Plus, Trash2, Edit2, Check, Settings, Sparkles } from 'lucide-react';
 import { BoardType } from '@/types';
+import axios from 'axios';
 import clsx from 'clsx';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
   const {
@@ -15,6 +18,23 @@ export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
   const [isManagingTypes, setIsManagingTypes] = useState(false);
   const [newTypeName, setNewTypeName] = useState('');
   const [editingType, setEditingType] = useState<{ original: string, current: string } | null>(null);
+  const [suggestion, setSuggestion] = useState<{class?: string, subject?: string} | null>(null);
+
+  useEffect(() => {
+      const fetchSuggestions = async () => {
+          try {
+              const res = await axios.get(`${API_URL}/api/user-suggestions`);
+              if (res.data.class || res.data.subject) {
+                  setSuggestion(res.data);
+                  if (res.data.class) setSelectedClass(res.data.class);
+                  if (res.data.subject) setSelectedSubject(res.data.subject);
+              }
+          } catch (e) {
+              console.error(e);
+          }
+      };
+      fetchSuggestions();
+  }, []);
 
   const handleSave = () => {
     onClose();
@@ -36,7 +56,7 @@ export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-800">প্রশ্নপত্র সেটআপ (Exam Setup)</h2>
             <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full">
@@ -197,6 +217,24 @@ export const ExamSetupModal = ({ onClose }: { onClose: () => void }) => {
                 Save & Continue
             </button>
         </div>
+
+        {/* Smart Suggestion Toast */}
+        {suggestion && (
+            <div className="absolute bottom-4 left-4 right-4 bg-gray-900 text-white p-4 rounded shadow-lg flex items-center justify-between z-10 animate-pulse">
+                <div className="flex items-center gap-3">
+                    <Sparkles className="w-5 h-5 text-yellow-400" />
+                    <div>
+                        <p className="text-sm font-bold">Smart Suggestion applied</p>
+                        <p className="text-xs text-gray-300">
+                            Based on your history: {suggestion.class?.replace('-',' ').toUpperCase()} | {suggestion.subject}
+                        </p>
+                    </div>
+                </div>
+                <button onClick={() => setSuggestion(null)} className="text-gray-400 hover:text-white">
+                    <X className="w-4 h-4" />
+                </button>
+            </div>
+        )}
       </div>
     </div>
   );
