@@ -1,4 +1,9 @@
-export type BlockType = 'text' | 'math' | 'image' | 'answer_space';
+export type BlockType = 'text' | 'math' | 'image' | 'answer_space' | 'drawing';
+
+export interface DrawingBlockContent {
+  data: string; // Base64 or URL
+  canvasData?: any; // JSON from Fabric.js
+}
 
 export interface MathBlockContent {
   latex: string;
@@ -24,7 +29,7 @@ export interface AnswerSpaceContent {
 export interface QuestionBlock {
   id: string;
   type: BlockType;
-  content: string | MathBlockContent | ImageBlockContent | AnswerSpaceContent;
+  content: string | MathBlockContent | ImageBlockContent | AnswerSpaceContent | DrawingBlockContent;
 }
 
 export interface Question {
