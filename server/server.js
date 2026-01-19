@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/exam-builde
 // Models
 const Question = require('./models/Question');
 const ExamPaper = require('./models/ExamPaper');
+const EventStore = require('./models/EventStore');
 const { upload } = require('./config/cloudinary');
 
 // Seed Data
@@ -96,7 +97,6 @@ app.get('/api/questions', async (req, res) => {
             await Question.insertMany(seedQuestions);
             questions = await Question.find();
         }
-        // Map _id to id for frontend compatibility
         const formattedQuestions = questions.map(q => ({
             ...q.toObject(),
             id: q._id.toString()
@@ -129,12 +129,31 @@ app.post('/api/exam-paper', async (req, res) => {
     }
 });
 
+// Event Logging API
+app.post('/api/log-event', async (req, res) => {
+    try {
+        const { userId, intent, params } = req.body;
+        // Basic validation
+        if (!intent) return res.status(400).send({ error: 'Intent required' });
+
+        const event = new EventStore({
+            userId: userId || 'anonymous',
+            intent,
+            params
+        });
+        await event.save();
+        res.status(201).send({ success: true });
+    } catch (error) {
+        console.error('Event Log Error:', error);
+        res.status(500).send({ error: 'Failed to log event' });
+    }
+});
+
 // Cloud Sync Upload API
 app.post('/api/sync-cloud', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
     }
-    // Return the Cloudinary URL
     res.json({
         message: 'File uploaded successfully',
         url: req.file.path,

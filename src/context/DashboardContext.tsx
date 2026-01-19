@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
 import { Question, QuestionGroup, Section, ExamMeta } from '@/types';
+import { logEvent } from '@/utils/eventLogger';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -126,6 +127,14 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
             questions: selectedQuestions,
             sections
         });
+
+        // Log "save_question_paper" event silently
+        logEvent('save_question_paper', {
+            examType: data.examType,
+            schoolName: data.schoolName,
+            questionCount: selectedQuestions.length
+        });
+
     } catch (error) {
         console.error('Failed to save draft:', error);
     } finally {
