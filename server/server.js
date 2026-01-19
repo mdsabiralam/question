@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const crypto = require('crypto'); // For hashing
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/exam-builde
 const Question = require('./models/Question');
 const ExamPaper = require('./models/ExamPaper');
 const EventStore = require('./models/EventStore');
+const AICache = require('./models/AICache');
 const { upload } = require('./config/cloudinary');
 
 // Seed Data
@@ -178,6 +180,75 @@ app.get('/api/user-suggestions', async (req, res) => {
     } catch (error) {
         console.error('Suggestion Error:', error);
         res.status(500).json({});
+    }
+});
+
+// AI Mock Service Logic (Backend)
+const generateAIResponse = async ({ studentAnswer, modelAnswer, totalMarks, examType, board }) => {
+    // Simulate delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    if (!studentAnswer || !studentAnswer.trim()) return { suggestedMarks: 0, feedback: "No answer provided." };
+
+    // Heuristic Logic
+    const keywords = (modelAnswer || "").toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"").split(/\s+/).filter(w => w.length > 3);
+    const studentWords = studentAnswer.toLowerCase();
+
+    let matchCount = 0;
+    keywords.forEach(k => {
+        if (studentWords.includes(k)) matchCount++;
+    });
+
+    const matchRatio = keywords.length > 0 ? matchCount / keywords.length : (studentAnswer.length > 10 ? 0.5 : 0);
+
+    let marks = Math.min(totalMarks, Math.round(totalMarks * (matchRatio + 0.2)));
+    if (matchRatio < 0.2) marks = Math.max(0, marks - 1);
+
+    const isStrict = ['Annual Exam', 'First Terminal', 'Second Terminal'].some(t => examType && examType.includes(t));
+    const isWB = board === 'WB';
+
+    let feedback = "";
+    if (marks >= totalMarks * 0.8) {
+        feedback = isStrict ? "Accurate and comprehensive." : "Great answer!";
+    } else if (marks >= totalMarks * 0.5) {
+        feedback = isStrict ? "Partially correct." : "Good start!";
+    } else {
+        feedback = isStrict ? "Incomplete." : "Nice try!";
+    }
+
+    if (isWB) {
+        if (marks >= totalMarks * 0.8) feedback = "চমৎকার উত্তর। " + feedback;
+        else if (marks >= totalMarks * 0.5) feedback = "ভালো চেষ্টা। " + feedback;
+        else feedback = "আরও ভালো করতে হবে। " + feedback;
+    }
+
+    return { suggestedMarks: marks, feedback };
+};
+
+// AI Completion Endpoint with Caching
+app.post('/api/ai-completion', async (req, res) => {
+    try {
+        const { prompt } = req.body;
+        // Create deterministic hash
+        const hash = crypto.createHash('sha256').update(JSON.stringify(prompt)).digest('hex');
+
+        // Check Cache
+        const cached = await AICache.findOne({ hash });
+        if (cached) {
+            console.log(`Cache Hit for ${hash.substring(0, 8)}`);
+            return res.json({ result: cached.response, fromCache: true });
+        }
+
+        console.log(`Cache Miss for ${hash.substring(0, 8)} - Calling AI`);
+        const result = await generateAIResponse(prompt);
+
+        // Save Cache
+        await AICache.create({ hash, prompt, response: result });
+
+        res.json({ result, fromCache: false });
+    } catch (error) {
+        console.error("AI Service Error:", error);
+        res.status(500).json({ error: "AI Processing Failed" });
     }
 });
 

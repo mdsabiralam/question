@@ -5,7 +5,7 @@ import { useDashboard } from '@/context/DashboardContext';
 import { AnswerInput } from './AnswerInput';
 import { EvaluationResult } from './EvaluationResult';
 import { analyzeAnswer, AIAnalysis } from '@/utils/aiEvaluation';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 
 export const EvaluationDashboard = () => {
   const { selectedQuestions, examMeta, setCurrentView } = useDashboard();
@@ -15,15 +15,18 @@ export const EvaluationDashboard = () => {
   const [analysis, setAnalysis] = useState<AIAnalysis | null>(null);
   const [marks, setMarks] = useState(0);
   const [feedback, setFeedback] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const selectedQuestion = selectedQuestions.find(q => q.id === selectedQuestionId);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
       if (!selectedQuestion) return;
-      const res = analyzeAnswer(studentAnswer, selectedQuestion.answer || '', selectedQuestion.marks, examMeta);
+      setIsAnalyzing(true);
+      const res = await analyzeAnswer(studentAnswer, selectedQuestion.answer || '', selectedQuestion.marks, examMeta);
       setAnalysis(res);
       setMarks(res.suggestedMarks);
       setFeedback(res.feedback);
+      setIsAnalyzing(false);
   };
 
   if (!selectedQuestionId) {
@@ -95,10 +98,11 @@ export const EvaluationDashboard = () => {
                       <h3 className="text-sm font-bold text-gray-600 uppercase tracking-wide">2. AI Analysis</h3>
                       <button
                           onClick={handleAnalyze}
-                          disabled={!studentAnswer.trim()}
+                          disabled={!studentAnswer.trim() || isAnalyzing}
                           className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded shadow hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
-                          <Sparkles className="w-4 h-4" /> Analyze Answer
+                          {isAnalyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                          {isAnalyzing ? 'Analyzing...' : 'Analyze Answer'}
                       </button>
                   </div>
 
