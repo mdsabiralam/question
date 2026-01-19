@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import { Question, QuestionBlock, BlockType } from '@/types';
-import { X, Plus, ArrowUp, ArrowDown, Trash2, Type, Calculator, Image as ImageIcon, BoxSelect } from 'lucide-react';
+import { X, Plus, ArrowUp, ArrowDown, Trash2, Type, Calculator, Image as ImageIcon, BoxSelect, PenTool } from 'lucide-react';
 import { MathBlockEditor } from './MathBlockEditor';
 import { ImageBlockEditor } from './ImageBlockEditor';
 import { AnswerSpaceEditor } from './AnswerSpaceEditor';
+import { DrawingBlockEditor } from './DrawingBlockEditor';
 
 interface QuestionEditorModalProps {
   question: Question;
@@ -15,7 +16,7 @@ interface QuestionEditorModalProps {
 
 export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEditorModalProps) => {
   const [blocks, setBlocks] = useState<QuestionBlock[]>(question.blocks || [
-      { id: '1', type: 'text', content: question.title } // Default to existing title if no blocks
+      { id: '1', type: 'text', content: question.title }
   ]);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(blocks[0]?.id || null);
   const [answer, setAnswer] = useState(question.answer || '');
@@ -36,6 +37,7 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
           case 'math': return { latex: '', mode: 'latex' };
           case 'image': return { url: '' };
           case 'answer_space': return { type: 'line', count: 3 };
+          case 'drawing': return { data: '' };
           default: return '';
       }
   };
@@ -114,6 +116,7 @@ export const QuestionEditorModal = ({ question, onSave, onClose }: QuestionEdito
                     <button onClick={() => handleAddBlock('math')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><Calculator className="w-4 h-4" /> Math</button>
                     <button onClick={() => handleAddBlock('image')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><ImageIcon className="w-4 h-4" /> Image</button>
                     <button onClick={() => handleAddBlock('answer_space')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium"><BoxSelect className="w-4 h-4" /> Answer</button>
+                    <button onClick={() => handleAddBlock('drawing')} className="flex items-center justify-center gap-1 p-2 bg-white border hover:bg-gray-100 rounded text-xs font-medium col-span-2"><PenTool className="w-4 h-4" /> Draw / Sketch</button>
                 </div>
             </div>
 
@@ -161,6 +164,7 @@ const getBlockIcon = (type: BlockType) => {
         case 'math': return <Calculator className="w-4 h-4 text-blue-500" />;
         case 'image': return <ImageIcon className="w-4 h-4 text-green-500" />;
         case 'answer_space': return <BoxSelect className="w-4 h-4 text-purple-500" />;
+        case 'drawing': return <PenTool className="w-4 h-4 text-orange-500" />;
     }
 };
 
@@ -181,6 +185,8 @@ const renderEditor = (block: QuestionBlock, onUpdate: (id: string, content: any)
             return <ImageBlockEditor content={block.content as any} onChange={(c) => onUpdate(block.id, c)} />;
         case 'answer_space':
             return <AnswerSpaceEditor content={block.content as any} onChange={(c) => onUpdate(block.id, c)} />;
+        case 'drawing':
+            return <DrawingBlockEditor content={block.content as any} onChange={(c) => onUpdate(block.id, c)} />;
         default: return null;
     }
 };

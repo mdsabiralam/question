@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from 'react';
-import { QuestionBlock, MathBlockContent, ImageBlockContent, AnswerSpaceContent } from '@/types';
+import { QuestionBlock, MathBlockContent, ImageBlockContent, AnswerSpaceContent, DrawingBlockContent } from '@/types';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -13,7 +13,7 @@ const MathRenderer = ({ content }: { content: MathBlockContent }) => {
             try {
                 katex.render(content.latex, containerRef.current, {
                     throwOnError: false,
-                    displayMode: true // Default to display mode for clearer view
+                    displayMode: true
                 });
             } catch (e) {
                 console.error(e);
@@ -36,6 +36,18 @@ export const BlockRenderer = ({ block }: { block: QuestionBlock }) => {
                 <div className="mb-2 flex flex-col items-center">
                     <img src={imgContent.url} alt="Question Image" className="max-w-full h-auto max-h-60 rounded border" />
                     {imgContent.caption && <p className="text-sm text-gray-500 mt-1">{imgContent.caption}</p>}
+                </div>
+            );
+        case 'drawing':
+            const drawContent = block.content as DrawingBlockContent;
+            return (
+                <div className="mb-2 flex flex-col items-center">
+                    {drawContent.data ? (
+                        <img src={drawContent.data} alt="Drawing" className="max-w-full h-auto max-h-60 border rounded" />
+                    ) : (
+                        <div className="text-gray-400 italic text-sm p-4 border border-dashed rounded w-full text-center">[Empty Drawing]</div>
+                    )}
+                    {drawContent.caption && <p className="text-sm text-gray-500 mt-1">{drawContent.caption}</p>}
                 </div>
             );
         case 'answer_space':

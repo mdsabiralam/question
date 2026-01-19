@@ -1,4 +1,4 @@
-export type BlockType = 'text' | 'math' | 'image' | 'answer_space';
+export type BlockType = 'text' | 'math' | 'image' | 'answer_space' | 'drawing';
 
 export interface MathBlockContent {
   latex: string;
@@ -15,6 +15,12 @@ export interface ImageBlockContent {
   caption?: string;
 }
 
+export interface DrawingBlockContent {
+    data: string; // Base64 image
+    canvasData?: any; // JSON for re-editing
+    caption?: string;
+}
+
 export interface AnswerSpaceContent {
   type: 'line' | 'box';
   count?: number; // for lines
@@ -24,7 +30,7 @@ export interface AnswerSpaceContent {
 export interface QuestionBlock {
   id: string;
   type: BlockType;
-  content: string | MathBlockContent | ImageBlockContent | AnswerSpaceContent;
+  content: string | MathBlockContent | ImageBlockContent | AnswerSpaceContent | DrawingBlockContent;
 }
 
 export interface Question {
